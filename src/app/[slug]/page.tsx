@@ -1,6 +1,9 @@
-import React from 'react';
+import Image, { StaticImageData } from 'next/image';
+import clsx from 'clsx';
 import { notFound } from 'next/navigation';
+
 import { books } from '@/library/books';
+import { SubmitButton } from '@/components/Buttons';
 
 type Props = {
 	params: { slug: string };
@@ -17,13 +20,20 @@ export default function BookPage({ params }: Props) {
 		<div className="flex flex-col my-8 mx-4">
 			<div className="flex flex-col md:flex-row w-full">
 				<div className="w-full md:w-1/2 md:pr-4 md:mb-10 order-2 md:order-1">
-					<div className="bg-gray-400 w-full aspect-[3/4] rounded-xl" />
+					<div>
+						<Image
+							src={book.image}
+							alt={`${book.title} by ${book.author} cover`}
+							className="rounded-lg"
+						/>
+					</div>
 				</div>
 				<div className="w-full md:w-1/2 pl-4 order-1 md:order-2">
 					<h1 className="text-3xl font-bold">{book.title}</h1>
 					<p className="mb-4">{book.author}</p>
-					<p className="">£{book.price.toFixed(2)}</p>
-					<button className="hover:underline">Add to Cart</button>
+					<p className="mb-4">£{book.price.toFixed(2)}</p>
+					<p className="text-gray-700">{`This exclusive digital edition is meticulously typeset to bring ${book.author}'s prose to life for contemporary readers. Purchase now and lose yourself in this unforgettable classic!`}</p>
+					<SubmitButton classes={'my-8'} cta={'Add to cart'} />
 				</div>
 			</div>
 			<div className="space-y-4">
