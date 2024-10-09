@@ -1,5 +1,6 @@
 'use client';
 import { useMemo } from 'react';
+import clsx from 'clsx';
 
 import type { StaticBook } from '@/types';
 import { ToggleCartButton } from './Buttons';
@@ -75,30 +76,34 @@ export default function OrderTable({ type }: OrderTableProps) {
 				<tbody>
 					{books.map((book) => {
 						const cartItem = cart.find((item) => item.slug === book.slug);
-						const isBookRemoved = cartItem?.removed;
+						const removedCartItem = cartItem?.removed;
 
 						return (
 							<tr key={book.slug}>
 								<td className="py-3 pr-4 w-2/3">
 									<span
-										className={`text-base ${
-											isBookRemoved ? 'line-through' : ''
-										}`}
+										className={clsx('text-base', {
+											'line-through': removedCartItem,
+										})}
 									>
 										{book.title}
 									</span>
 									<br />
-									<span className="text-sm text-gray-600">
+									<span
+										className={clsx('text-sm text-gray-600', {
+											'line-through': removedCartItem,
+										})}
+									>
 										{book.author}
 									</span>
 								</td>
-								<td className="py-3 w-1/6">
+								<td className="py-3 w-1/6 text-right">
 									{type === 'purchaseHistory' ? (
 										<span>5</span>
 									) : (
 										<ToggleCartButton
 											slug={book.slug}
-											isRemoved={isBookRemoved || false}
+											isRemoved={removedCartItem || false}
 											onToggle={handleToggle}
 										/>
 									)}
@@ -107,7 +112,11 @@ export default function OrderTable({ type }: OrderTableProps) {
 									{type === 'purchaseHistory' ? (
 										<DownloadLink book={book} />
 									) : (
-										<span>{`£${book.price.toFixed(2)}`}</span>
+										<span
+											className={clsx('text-sm text-gray-600', {
+												'line-through': removedCartItem,
+											})}
+										>{`£${book.price.toFixed(2)}`}</span>
 									)}
 								</td>
 							</tr>
