@@ -9,7 +9,7 @@ import type { ApiResponse, ApiStatus, Token, CartItem } from '@/types';
 
 export async function POST(
 	request: Request,
-	{ params }: { params: { bookId: string } }
+	{ params }: { params: { bookSlug: string } }
 ): Promise<NextResponse<ApiResponse>> {
 	const cookieStore = cookies();
 	const token = cookieStore.get('token');
@@ -45,9 +45,9 @@ export async function POST(
 			);
 		}
 
-		const bookId = params.bookId;
+		const { bookSlug } = params;
 		const cartItemIndex = user.cart.findIndex(
-			(item: CartItem) => item.slug === bookId
+			(item: CartItem) => item.slug === bookSlug
 		);
 
 		if (cartItemIndex === -1) {
@@ -62,11 +62,9 @@ export async function POST(
 			);
 		}
 
-		// Remove the book from the cart
 		user.cart.splice(cartItemIndex, 1);
 		await user.save();
 
-		// Generate a new token with updated user data
 		const newToken = jwt.sign({ sub: user._id }, jwtSecret, {
 			expiresIn: '1h',
 		});

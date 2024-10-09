@@ -1,5 +1,5 @@
-import clsx from 'clsx';
 import Link from 'next/link';
+import clsx from 'clsx';
 
 const baseButtonStyles = clsx(
 	'font-semibold',
@@ -32,7 +32,14 @@ const deleteColorStyles = clsx(
 
 interface SubmitButtonProps
 	extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-	cta: 'Sign in' | 'Create account' | 'Buy now' | 'Add to cart' | 'Sign out';
+	cta:
+		| 'Sign in'
+		| 'Create account'
+		| 'Buy now'
+		| 'Add to cart'
+		| 'Sign out'
+		| 'In cart'
+		| 'Adding...';
 	variant?: 'primary' | 'secondary';
 	classes?: string;
 }

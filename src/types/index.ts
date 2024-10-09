@@ -28,8 +28,8 @@ export interface UserType {
 export type ApiStatus = 'success' | 'info' | 'warning' | 'error';
 
 export interface ApiResponse {
-	status: ApiStatus;
 	message: string | null;
+	status: ApiStatus;
 	loggedIn: boolean;
 	user: UserType | null;
 }

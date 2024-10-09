@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 
+import { isProduction } from '@/library/clientEnvironment';
 import { jwtSecret } from '@/app/api/serverEnvironment';
 import { type Token } from '@/types';
 import { connectToDatabase, User } from '@/library/User';
@@ -40,7 +41,7 @@ export async function DELETE(request: NextRequest) {
 		});
 		response.cookies.set('token', '', {
 			httpOnly: true,
-			secure: process.env.NODE_ENV === 'production',
+			secure: isProduction,
 			sameSite: 'strict',
 			maxAge: 0,
 			path: '/',

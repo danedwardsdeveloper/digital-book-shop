@@ -6,18 +6,13 @@ import type { ApiResponse, CartItem, Token, UserType } from '@/types';
 import { createCookieOptions } from '@/library/cookies';
 import { User, connectToDatabase } from '@/library/User';
 import { books } from '@/library/books';
+import { jwtSecret } from '@/app/api/serverEnvironment';
 
 export async function POST(
 	request: Request,
-	{ params }: { params: { bookId: string } }
+	{ params }: { params: { bookSlug: string } }
 ) {
-	const JWT_SECRET = process.env.JWT_SECRET;
-
-	if (!JWT_SECRET) {
-		throw new Error('JWT_SECRET is not defined');
-	}
-
-	const bookId = params.bookId;
+	const { bookSlug } = params;
 
 	try {
 		await connectToDatabase();
@@ -36,7 +31,7 @@ export async function POST(
 			);
 		}
 
-		const decodedToken = jwt.verify(token, JWT_SECRET) as Token;
+		const decodedToken = jwt.verify(token, jwtSecret) as Token;
 		const userId = decodedToken.sub;
 
 		const user = await User.findById(userId);
@@ -53,13 +48,12 @@ export async function POST(
 			);
 		}
 
-		// Check if the bookId is valid
-		const validBook = books.find((book) => book.slug === bookId);
+		const validBook = books.find((book) => book.slug === bookSlug);
 		if (!validBook) {
 			return NextResponse.json<ApiResponse>(
 				{
 					status: 'error',
-					message: 'Invalid book ID',
+					message: 'Invalid book slug',
 					loggedIn: true,
 					user: user.toObject() as UserType,
 				},
@@ -70,9 +64,8 @@ export async function POST(
 		let message: string;
 		let statusCode: number;
 
-		// Check if the book is already in the cart
 		const existingCartItem = user.cart.find(
-			(item: CartItem) => item.slug === bookId
+			(item: CartItem) => item.slug === bookSlug
 		);
 
 		if (existingCartItem) {
@@ -86,20 +79,17 @@ export async function POST(
 				{ status: 200 }
 			);
 		} else {
-			// Add the book to the cart
-			user.cart.push({ slug: bookId });
+			user.cart.push({ slug: bookSlug });
 			await user.save();
 			message = 'Book added to cart';
 			statusCode = 200;
 		}
 
-		// Generate a new token with updated user data
-		const newToken = jwt.sign({ sub: user._id }, JWT_SECRET, {
+		const newToken = jwt.sign({ sub: user._id }, jwtSecret, {
 			expiresIn: '1h',
 		});
 		const cookieOptions = createCookieOptions(newToken);
 
-		// Create the response
 		const response = NextResponse.json<ApiResponse>(
 			{
 				status: 'success',
@@ -110,7 +100,6 @@ export async function POST(
 			{ status: statusCode }
 		);
 
-		// Set the new token as a cookie
 		response.cookies.set(cookieOptions);
 
 		return response;

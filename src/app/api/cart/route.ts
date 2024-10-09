@@ -11,6 +11,7 @@ import type {
 } from '@/types';
 import { User, connectToDatabase } from '@/library/User';
 import { books } from '@/library/books';
+import { jwtSecret } from '../serverEnvironment';
 
 export async function GET() {
 	try {
@@ -30,14 +31,8 @@ export async function GET() {
 
 		let decoded: Token;
 
-		const JWT_SECRET = process.env.JWT_SECRET;
-
-		if (!JWT_SECRET) {
-			throw new Error('JWT_SECRET is not defined');
-		}
-
 		try {
-			decoded = jwt.verify(token.value, JWT_SECRET) as Token;
+			decoded = jwt.verify(token.value, jwtSecret) as Token;
 		} catch (error) {
 			return NextResponse.json<ApiResponse>({
 				status: 'error',

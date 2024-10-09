@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import clsx from 'clsx';
+import { ApiStatus } from '@/types';
 
 interface FormProps {
 	onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
@@ -65,10 +66,6 @@ export function FormLink({ target, text }: FormLinkProps) {
 			</Link>
 		</p>
 	);
-}
-
-export function FormErrorMessage({ message }: { message: string }) {
-	return <p className="text-red-500 text-center">{message}</p>;
 }
 
 export function FormSpacer() {

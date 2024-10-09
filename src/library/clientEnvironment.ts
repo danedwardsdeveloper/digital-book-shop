@@ -1,5 +1,12 @@
-type NodeEnv = 'development' | 'production' | 'test';
-const nodeEnv: NodeEnv = process.env.NODE_ENV;
+export function validateVariable(variableName: string): string {
+	const value = process.env[variableName];
+	if (!value) {
+		throw new Error(`Environment variable ${variableName} is missing`);
+	}
+	return value;
+}
+
+const nodeEnv = validateVariable('NODE_ENV');
 
 if (!nodeEnv) {
 	throw new Error('NODE_ENV missing');

@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from 'next';
-import './globals.tailwind.css';
-
 import clsx from 'clsx';
+
+import './globals.tailwind.css';
+import { Providers } from '../components/Providers';
 import MenuBar from '../components/MenuBar';
 
 export const viewport: Viewport = {
@@ -23,16 +24,18 @@ export default function RootLayout({
 	return (
 		<html lang="en-GB">
 			<body>
-				<div
-					className={clsx(
-						'max-w-2xl mx-auto',
-						'min-h-screen',
-						'bg-gray-50'
-					)}
-				>
+				<Providers>
 					<MenuBar />
-					<main className="p-4 pb-40">{children}</main>
-				</div>
+					<div
+						className={clsx(
+							'max-w-2xl mx-auto',
+							'min-h-screen'
+							// 'bg-gray-50'
+						)}
+					>
+						<main className="p-4 pb-40">{children}</main>
+					</div>
+				</Providers>
 			</body>
 		</html>
 	);

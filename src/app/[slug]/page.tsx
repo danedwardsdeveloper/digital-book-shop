@@ -1,16 +1,11 @@
-import Image, { StaticImageData } from 'next/image';
-import clsx from 'clsx';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
 import { books } from '@/library/books';
-import { SubmitButton } from '@/components/Buttons';
+import { CartButton } from '@/components/CartButton';
 
-type Props = {
-	params: { slug: string };
-};
-
-export default function BookPage({ params }: Props) {
-	const book = books.find((b) => b.slug === params.slug);
+export default function BookPage({ params }: { params: { slug: string } }) {
+	const book = books.find((book) => book.slug === params.slug);
 
 	if (!book) {
 		notFound();
@@ -33,7 +28,7 @@ export default function BookPage({ params }: Props) {
 					<p className="mb-4">{book.author}</p>
 					<p className="mb-4">£{book.price.toFixed(2)}</p>
 					<p className="text-gray-700">{`This exclusive digital edition is meticulously typeset to bring ${book.author}'s prose to life for contemporary readers. Purchase now and lose yourself in this unforgettable classic!`}</p>
-					<SubmitButton classes={'my-8'} cta={'Add to cart'} />
+					<CartButton slug={book.slug} />
 				</div>
 			</div>
 			<div className="space-y-4">

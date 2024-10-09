@@ -1,5 +1,6 @@
 'use client';
-import { Form, FormErrorMessage, FormLink, Input } from '@/components/Form';
+import { Form, FormLink, Input } from '@/components/Form';
+import { FeedbackMessage } from '@/components/FeedbackMessage';
 import { SubmitButton } from '@/components/Buttons';
 
 export default function CreateAccount() {
@@ -10,15 +11,31 @@ export default function CreateAccount() {
 
 	return (
 		<Form onSubmit={handleSubmit}>
-			<Input label="Name" id="name" name="name" type="text" />
-			<Input label="Email" id="email" name="email" type="email" />
+			<Input
+				label="Name"
+				id="name"
+				name="name"
+				type="text"
+				value={''}
+				onChange={() => null}
+			/>
+			<Input
+				label="Email"
+				id="email"
+				name="email"
+				type="email"
+				value={''}
+				onChange={() => null}
+			/>
 			<Input
 				label="Password"
 				id="password"
 				name="password"
 				type="password"
+				value={''}
+				onChange={() => null}
 			/>
-			<FormErrorMessage message="Sorry something went wrong." />
+			<FeedbackMessage />
 			<SubmitButton cta="Create account" />
 			<FormLink target={'/sign-in'} text={'Sign in instead'} />
 		</Form>

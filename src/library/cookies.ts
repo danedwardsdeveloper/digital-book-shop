@@ -1,8 +1,4 @@
-const nodeEnv = process.env.NODE_ENV;
-if (!nodeEnv) {
-	throw new Error(`NODE_ENV isn't  not defined.`);
-}
-const isProduction = nodeEnv === 'production';
+import { isProduction } from './clientEnvironment';
 
 type CookieOptions = {
 	name: string;

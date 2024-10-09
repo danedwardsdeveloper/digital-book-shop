@@ -1,10 +1,4 @@
-function validateVariable(variableName: string): string {
-	const value = process.env[variableName];
-	if (!value) {
-		throw new Error(`Environment variable ${variableName} is missing`);
-	}
-	return value;
-}
+import { validateVariable } from '@/library/clientEnvironment';
 
 const jwtSecret = validateVariable('JWT_SECRET');
 const mongoURI = validateVariable('MONGODB_URI');
