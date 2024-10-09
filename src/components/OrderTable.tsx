@@ -1,10 +1,10 @@
 'use client';
-import { type StaticBook } from '@/types';
+import { useMemo } from 'react';
 
-interface BookTableProps {
-	type: 'orderSummary' | 'purchaseHistory';
-	books: StaticBook[];
-}
+import type { StaticBook } from '@/types';
+import { ToggleCartButton } from './Buttons';
+import { books } from '@/library/books';
+import { useApiContext } from '@/components/Providers';
 
 function DownloadLink({ book }: { book: StaticBook }) {
 	return (
@@ -21,9 +21,35 @@ function DownloadLink({ book }: { book: StaticBook }) {
 	);
 }
 
-export default function OrderTable({ type, books }: BookTableProps) {
-	const total = books.reduce((sum, book) => sum + book.price, 0);
+interface OrderTableProps {
+	type: 'orderSummary' | 'purchaseHistory';
+}
 
+export default function OrderTable({ type }: OrderTableProps) {
+	const { cart, addToCart, removeFromCart } = useApiContext();
+
+	const cartBooks = useMemo(() => {
+		return books.filter((book) =>
+			cart.some((item) => item.slug === book.slug)
+		);
+	}, [cart]);
+
+	const activeBooks = useMemo(() => {
+		return cartBooks.filter(
+			(book) => !cart.find((item) => item.slug === book.slug)?.removed
+		);
+	}, [cartBooks, cart]);
+
+	const total = activeBooks.reduce((sum, book) => sum + book.price, 0);
+
+	const handleToggle = (slug: string) => {
+		const cartItem = cart.find((item) => item.slug === slug);
+		if (cartItem?.removed) {
+			addToCart(slug);
+		} else {
+			removeFromCart(slug);
+		}
+	};
 	return (
 		<>
 			<div className="w-2/3 mx-auto mt-8 mb-2 pb-2">
@@ -47,33 +73,46 @@ export default function OrderTable({ type, books }: BookTableProps) {
 					</thead>
 				)}
 				<tbody>
-					{books.map((book) => (
-						<tr key={book.slug}>
-							<td className="py-3 pr-4 w-2/3">
-								<span className="text-base">{book.title}</span>
-								<br />
-								<span className="text-sm text-gray-600">
-									{book.author}
-								</span>
-							</td>
-							<td className="py-3 w-1/6">
-								{type === 'purchaseHistory' ? (
-									<span>5</span>
-								) : (
-									<button className="hover:underline text-gray-500">
-										Remove
-									</button>
-								)}
-							</td>
-							<td className="py-3 pl-4 w-1/6 text-right">
-								{type === 'purchaseHistory' ? (
-									<DownloadLink book={book} />
-								) : (
-									<span>{`£${book.price.toFixed(2)}`}</span>
-								)}
-							</td>
-						</tr>
-					))}
+					{books.map((book) => {
+						const cartItem = cart.find((item) => item.slug === book.slug);
+						const isBookRemoved = cartItem?.removed;
+
+						return (
+							<tr key={book.slug}>
+								<td className="py-3 pr-4 w-2/3">
+									<span
+										className={`text-base ${
+											isBookRemoved ? 'line-through' : ''
+										}`}
+									>
+										{book.title}
+									</span>
+									<br />
+									<span className="text-sm text-gray-600">
+										{book.author}
+									</span>
+								</td>
+								<td className="py-3 w-1/6">
+									{type === 'purchaseHistory' ? (
+										<span>5</span>
+									) : (
+										<ToggleCartButton
+											slug={book.slug}
+											isRemoved={isBookRemoved || false}
+											onToggle={handleToggle}
+										/>
+									)}
+								</td>
+								<td className="py-3 pl-4 w-1/6 text-right">
+									{type === 'purchaseHistory' ? (
+										<DownloadLink book={book} />
+									) : (
+										<span>{`£${book.price.toFixed(2)}`}</span>
+									)}
+								</td>
+							</tr>
+						);
+					})}
 					{type === 'orderSummary' && (
 						<tr className="border-t border-gray-300">
 							<td className="py-3"></td>
