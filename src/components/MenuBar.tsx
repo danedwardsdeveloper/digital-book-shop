@@ -2,8 +2,8 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import clsx from 'clsx';
+import { useApiContext } from './Providers';
 
-const signedIn = true;
 const displayAllItemsForTesting = false;
 
 interface MenuItem {
@@ -22,6 +22,7 @@ const menuItems: MenuItem[] = [
 
 export default function MenuBar() {
 	const pathname = usePathname();
+	const { signedIn } = useApiContext();
 
 	const visibleMenuItems = displayAllItemsForTesting
 		? menuItems
