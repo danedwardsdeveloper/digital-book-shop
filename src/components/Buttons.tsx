@@ -1,5 +1,10 @@
+'use client';
+import { useState } from 'react';
 import Link from 'next/link';
 import clsx from 'clsx';
+
+import { CartItem } from '@/types';
+import { useCart } from '@/hooks/useCart';
 
 const baseButtonStyles = clsx(
 	'font-semibold',
@@ -81,22 +86,85 @@ export function DeleteButton({ classes, ...props }: DeleteButtonProps) {
 	);
 }
 
-interface NavButtonProps {
+interface NavButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	href: string;
 	cta: string;
 	variant?: 'primary' | 'secondary';
 }
 
-export function NavButton({ href, cta, variant = 'primary' }: NavButtonProps) {
+export function NavButton({
+	href,
+	cta,
+	variant = 'primary',
+	...props
+}: NavButtonProps) {
 	const colourStyles =
 		variant === 'primary' ? primaryColourStyles : secondaryColourStyles;
 
 	return (
-		<Link
-			href={href}
+		<button
 			className={clsx('text-center', baseButtonStyles, colourStyles)}
+			{...props}
 		>
-			{cta}
-		</Link>
+			<Link
+				href={href}
+				className="w-full h-full flex items-center justify-center"
+			>
+				{cta}
+			</Link>
+		</button>
+	);
+}
+
+export function CartButton({ slug }: CartItem) {
+	const { addToCart, isInCart } = useCart();
+	const [isLoading, setIsLoading] = useState(false);
+	const inCart = isInCart(slug);
+
+	const handleAddToCart = async () => {
+		if (inCart) return;
+
+		setIsLoading(true);
+		try {
+			await addToCart(slug);
+		} catch (error) {
+			console.error('Error adding item to cart:', error);
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	return (
+		<SubmitButton
+			classes={'my-8'}
+			cta={inCart ? 'In cart' : isLoading ? 'Adding...' : 'Add to cart'}
+			onClick={handleAddToCart}
+			disabled={inCart || isLoading}
+		/>
+	);
+}
+
+interface ToggleCartButtonProps {
+	slug: string;
+	isRemoved: boolean;
+	onToggle: (slug: string) => void;
+}
+
+export function ToggleCartButton({
+	slug,
+	isRemoved,
+	onToggle,
+}: ToggleCartButtonProps) {
+	const handleToggle = async () => {
+		onToggle(slug);
+	};
+
+	return (
+		<button
+			onClick={handleToggle}
+			className="text-gray-500 hover:underline focus:outline-none lowercase"
+		>
+			{isRemoved ? 'add' : 'remove'}
+		</button>
 	);
 }
