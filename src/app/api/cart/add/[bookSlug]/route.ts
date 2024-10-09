@@ -24,7 +24,7 @@ export async function POST(
 				{
 					status: 'error',
 					message: 'Not authenticated',
-					loggedIn: false,
+					signedIn: false,
 					user: null,
 				},
 				{ status: 401 }
@@ -41,7 +41,7 @@ export async function POST(
 				{
 					status: 'error',
 					message: 'User not found',
-					loggedIn: false,
+					signedIn: false,
 					user: null,
 				},
 				{ status: 404 }
@@ -54,7 +54,7 @@ export async function POST(
 				{
 					status: 'error',
 					message: 'Invalid book slug',
-					loggedIn: true,
+					signedIn: true,
 					user: user.toObject() as UserType,
 				},
 				{ status: 200 }
@@ -73,7 +73,7 @@ export async function POST(
 				{
 					status: 'info',
 					message: 'Book is already in cart',
-					loggedIn: true,
+					signedIn: true,
 					user: user.toObject() as UserType,
 				},
 				{ status: 200 }
@@ -94,7 +94,7 @@ export async function POST(
 			{
 				status: 'success',
 				message,
-				loggedIn: true,
+				signedIn: true,
 				user: user.toObject() as UserType,
 			},
 			{ status: statusCode }
@@ -109,7 +109,7 @@ export async function POST(
 			{
 				status: 'error',
 				message: 'Internal server error',
-				loggedIn: false,
+				signedIn: false,
 				user: null,
 			},
 			{ status: 500 }
