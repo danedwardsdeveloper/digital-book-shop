@@ -10,7 +10,7 @@ export default function BooksList() {
 				{books.map((book, index) => (
 					<li key={index} className="group w-full sm:w-1/2">
 						<Link href={`/${book.slug}`}>
-							<div className="flex space-x-4 p-3 rounded-lg transition duration-150 ease-in-out hover:bg-slate-200">
+							<div className="flex space-x-4 p-3 rounded-lg transition duration-150 ease-in-out hover:bg-blue-100">
 								<div className="w-1/2">
 									<Image
 										src={book.image}
