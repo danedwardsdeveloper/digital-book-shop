@@ -67,7 +67,7 @@ export default function Account() {
 				<h2 className="text-xl font-semibold">Account details</h2>
 				<AccountDetails user={tempUser} />
 			</div>
-			<OrderTable type={'purchaseHistory'} books={books} />
+			<OrderTable type={'purchaseHistory'} />
 			<div className="mt-8 w-2/3 mx-auto">
 				<SubmitButton cta={'Sign out'} variant={'secondary'} />
 			</div>
