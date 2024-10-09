@@ -1,6 +1,4 @@
 import Link from 'next/link';
-import clsx from 'clsx';
-import { ApiStatus } from '@/types';
 
 interface FormProps {
 	onSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
@@ -54,7 +52,7 @@ export function Input({
 }
 
 interface FormLinkProps {
-	target: '/sign-in' | 'create-account';
+	target: '/sign-in' | '/create-account';
 	text: 'Sign in instead' | 'Create account instead';
 }
 
