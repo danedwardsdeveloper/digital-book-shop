@@ -4,7 +4,7 @@ import Link from 'next/link';
 import clsx from 'clsx';
 
 import { CartItem } from '@/types';
-import { useCart } from '@/hooks/useCart';
+import { useCart } from './Providers';
 
 const baseButtonStyles = clsx(
 	'font-semibold',
