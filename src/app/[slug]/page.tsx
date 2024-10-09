@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
 import { books } from '@/library/books';
-import { CartButton } from '@/components/CartButton';
+import { CartButton } from '@/components/Buttons';
 
 export default function BookPage({ params }: { params: { slug: string } }) {
 	const book = books.find((book) => book.slug === params.slug);
