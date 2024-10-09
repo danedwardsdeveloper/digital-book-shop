@@ -19,7 +19,7 @@ export async function POST(
 			{
 				status: 'error' as ApiStatus,
 				message: 'Not signed in',
-				loggedIn: false,
+				signedIn: false,
 				user: null,
 			},
 			{ status: 401 }
@@ -38,7 +38,7 @@ export async function POST(
 				{
 					status: 'error' as ApiStatus,
 					message: 'User not found',
-					loggedIn: false,
+					signedIn: false,
 					user: null,
 				},
 				{ status: 404 }
@@ -55,7 +55,7 @@ export async function POST(
 				{
 					status: 'info' as ApiStatus,
 					message: 'Book not in cart',
-					loggedIn: true,
+					signedIn: true,
 					user: user.toObject(),
 				},
 				{ status: 200 }
@@ -73,7 +73,7 @@ export async function POST(
 		const response = NextResponse.json({
 			status: 'success' as ApiStatus,
 			message: 'Book removed from cart',
-			loggedIn: true,
+			signedIn: true,
 			user: user.toObject(),
 		});
 
@@ -88,7 +88,7 @@ export async function POST(
 				{
 					status: 'error' as ApiStatus,
 					message: 'Invalid session',
-					loggedIn: false,
+					signedIn: false,
 					user: null,
 				},
 				{ status: 401 }
@@ -99,7 +99,7 @@ export async function POST(
 			{
 				status: 'error' as ApiStatus,
 				message: 'An error occurred while removing book from cart',
-				loggedIn: true,
+				signedIn: true,
 				user: null,
 			},
 			{ status: 500 }
