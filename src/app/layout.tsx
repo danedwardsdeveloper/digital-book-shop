@@ -26,13 +26,7 @@ export default function RootLayout({
 			<body>
 				<Providers>
 					<MenuBar />
-					<div
-						className={clsx(
-							'max-w-2xl mx-auto',
-							'min-h-screen'
-							// 'bg-gray-50'
-						)}
-					>
+					<div className={clsx('max-w-2xl mx-auto', 'min-h-screen')}>
 						<main className="p-4 pb-40">{children}</main>
 					</div>
 				</Providers>
