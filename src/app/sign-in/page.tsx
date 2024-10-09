@@ -1,11 +1,11 @@
 'use client';
 import { useState } from 'react';
-import { useApiContext } from '@/components/Providers';
 
+import type { ApiResponse } from '@/types';
+import { useApiContext } from '@/components/Providers';
 import { Form, FormLink, FormSpacer, Input } from '@/components/Form';
 import { FeedbackMessage } from '@/components/FeedbackMessage';
 import { SubmitButton } from '@/components/Buttons';
-import type { ApiResponse } from '@/types';
 
 export default function SignIn() {
 	const { updateApiResponse, mergeCartsOnLogin } = useApiContext();
