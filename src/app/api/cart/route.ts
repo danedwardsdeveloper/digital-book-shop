@@ -24,7 +24,7 @@ export async function GET() {
 			return NextResponse.json<ApiResponse>({
 				status: 'error',
 				message: 'Not authenticated',
-				loggedIn: false,
+				signedIn: false,
 				user: null,
 			});
 		}
@@ -37,7 +37,7 @@ export async function GET() {
 			return NextResponse.json<ApiResponse>({
 				status: 'error',
 				message: 'Invalid token',
-				loggedIn: false,
+				signedIn: false,
 				user: null,
 			});
 		}
@@ -48,7 +48,7 @@ export async function GET() {
 			return NextResponse.json<ApiResponse>({
 				status: 'error',
 				message: 'User not found',
-				loggedIn: false,
+				signedIn: false,
 				user: null,
 			});
 		}
@@ -69,7 +69,7 @@ export async function GET() {
 		return NextResponse.json<ApiResponse>({
 			status: 'success',
 			message: null,
-			loggedIn: true,
+			signedIn: true,
 			user: responseUser,
 		});
 	} catch (error) {
@@ -77,7 +77,7 @@ export async function GET() {
 		return NextResponse.json<ApiResponse>({
 			status: 'error',
 			message: 'An error occurred',
-			loggedIn: false,
+			signedIn: false,
 			user: null,
 		});
 	}
