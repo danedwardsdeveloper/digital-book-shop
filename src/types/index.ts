@@ -11,6 +11,7 @@ export interface StaticBook {
 
 export interface CartItem {
 	slug: string;
+	removed?: boolean;
 }
 
 export interface PurchasedItem extends CartItem {
@@ -30,7 +31,7 @@ export type ApiStatus = 'success' | 'info' | 'warning' | 'error';
 export interface ApiResponse {
 	message: string | null;
 	status: ApiStatus;
-	loggedIn: boolean;
+	signedIn: boolean;
 	user: UserType | null;
 }
 
