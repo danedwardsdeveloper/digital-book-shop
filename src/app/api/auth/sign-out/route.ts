@@ -16,7 +16,7 @@ export async function POST(): Promise<NextResponse<ApiResponse>> {
 			{
 				status: 'error' as ApiStatus,
 				message: 'Not signed in',
-				loggedIn: false,
+				signedIn: false,
 				user: null,
 			},
 			{ status: 401 }
@@ -34,7 +34,7 @@ export async function POST(): Promise<NextResponse<ApiResponse>> {
 		const response = NextResponse.json({
 			status: 'success' as ApiStatus,
 			message: `${email} signed out successfully`,
-			loggedIn: false,
+			signedIn: false,
 			user: null,
 		});
 
@@ -51,7 +51,7 @@ export async function POST(): Promise<NextResponse<ApiResponse>> {
 				{
 					status: 'warning' as ApiStatus,
 					message: 'Invalid session cleared',
-					loggedIn: false,
+					signedIn: false,
 					user: null,
 				},
 				{ status: 200 }
@@ -68,7 +68,7 @@ export async function POST(): Promise<NextResponse<ApiResponse>> {
 			{
 				status: 'error' as ApiStatus,
 				message: 'An error occurred during sign-out',
-				loggedIn: true,
+				signedIn: true,
 				user: null,
 			},
 			{ status: 500 }
