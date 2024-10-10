@@ -3,20 +3,22 @@ import clsx from 'clsx';
 
 import { DeleteButton, SubmitButton } from '@/components/Buttons';
 import OrderTable from '@/components/OrderTable';
-import { StaticBook } from '@/types';
+import { StaticBook, UserType } from '@/types';
 import { books } from '@/library/books';
+import { useApiContext } from '@/components/Providers';
 
-interface User {
-	name: string;
-	email: string;
-	purchased: StaticBook[];
-}
+// interface User {
+// 	name: string;
+// 	email: string;
+// 	purchased: StaticBook[];
+// }
 
-const tempUser: User = {
-	name: 'Pippi Longstocking',
-	email: 'pippi@longstockingenterprises.se',
-	purchased: books,
-};
+// const tempUser: User = {
+// 	name: 'Pippi Longstocking',
+// 	email: 'pippi@longstockingenterprises.se',
+// 	purchased: books,
+// };
+
 interface GridListItemProps {
 	label: string;
 	value: string;
@@ -32,7 +34,7 @@ function GridListItem({ label, value }: GridListItemProps) {
 }
 
 interface AccountDetailsProps {
-	user: User;
+	user: UserType;
 }
 
 function AccountDetails({ user }: AccountDetailsProps) {
@@ -61,12 +63,23 @@ function confirmDelete(event: React.MouseEvent<HTMLButtonElement>) {
 }
 
 export default function Account() {
+	const { user } = useApiContext();
+
+	if (!user) {
+		return <p>Not signed in</p>;
+	}
+
+	const hasPurchased = user.purchased.length;
+
 	return (
 		<>
 			<div className="space-y-4 mt-8 mb-12 w-2/3 mx-auto">
 				<h2 className="text-xl font-semibold">Account details</h2>
-				<AccountDetails user={tempUser} />
+				<AccountDetails user={user} />
 			</div>
+			{/* Fix this! */}
+			{/* {hasPurchased && 
+			} */}
 			<OrderTable type={'purchaseHistory'} />
 			<div className="mt-8 w-2/3 mx-auto">
 				<SubmitButton cta={'Sign out'} variant={'secondary'} />

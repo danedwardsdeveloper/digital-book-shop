@@ -1,18 +1,18 @@
 'use client';
 import { useState } from 'react';
+
 import { NavButton } from '@/components/Buttons';
 import Container from '@/components/Container';
 import OrderTable from '@/components/OrderTable';
 import { useApiContext } from '@/components/Providers';
 import { FeedbackMessage } from '@/components/FeedbackMessage';
+import { Button } from '@/components/NewButtons';
 
-type StripeApiResponse = {
-	status: 'success' | 'error';
-	sessionId?: string;
-	message?: string;
-};
+export default function Cart() {
+	const { cart } = useApiContext();
 
-const CheckoutButton = ({ disabled }: { disabled: boolean }) => {
+	const activeCartItems = cart.filter((item) => !item.removed);
+
 	const { updateApiResponse } = useApiContext();
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -25,6 +25,12 @@ const CheckoutButton = ({ disabled }: { disabled: boolean }) => {
 					'Content-Type': 'application/json',
 				},
 			});
+
+			interface StripeApiResponse {
+				status: 'success' | 'error';
+				sessionId?: string;
+				message?: string;
+			}
 
 			const data: StripeApiResponse = await response.json();
 
@@ -54,36 +60,20 @@ const CheckoutButton = ({ disabled }: { disabled: boolean }) => {
 	};
 
 	return (
-		<button
-			onClick={handleCheckout}
-			disabled={disabled || isLoading}
-			className={`px-4 py-2 rounded ${
-				disabled || isLoading
-					? 'bg-gray-300 cursor-not-allowed'
-					: 'bg-blue-500 hover:bg-blue-600 text-white'
-			}`}
-		>
-			{isLoading ? 'Processing...' : 'Checkout'}
-		</button>
-	);
-};
-
-export default function Cart() {
-	const { cart } = useApiContext();
-
-	const activeCartItems = cart.filter((item) => !item.removed);
-
-	return (
 		<div>
 			<OrderTable type={'orderSummary'} />
 			<Container>
 				<FeedbackMessage />
+				<Button
+					text={isLoading ? 'Processing...' : 'Checkout'}
+					disabled={isLoading}
+					onClick={handleCheckout}
+				/>
 				<NavButton
 					href={'/'}
 					cta={'Continue shopping'}
 					variant={'secondary'}
 				/>
-				<CheckoutButton disabled={activeCartItems.length === 0} />
 			</Container>
 		</div>
 	);

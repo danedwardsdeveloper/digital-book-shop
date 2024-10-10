@@ -1,18 +1,26 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 import type { ApiResponse } from '@/types';
 import { useApiContext } from '@/components/Providers';
 import { Form, FormLink, FormSpacer, Input } from '@/components/Form';
 import { FeedbackMessage } from '@/components/FeedbackMessage';
-import { SubmitButton } from '@/components/Buttons';
+import { Button } from '@/components/NewButtons';
 
 export default function SignIn() {
-	const { updateApiResponse, mergeCartsOnLogin } = useApiContext();
-
+	const { updateApiResponse, mergeCartsOnLogin, signedIn } = useApiContext();
 	const [email, setEmail] = useState('dan@gmail.com');
 	const [password, setPassword] = useState('securePassword');
 	const [isLoading, setIsLoading] = useState(false);
+
+	const router = useRouter();
+
+	useEffect(() => {
+		if (signedIn) {
+			router.push('/');
+		}
+	}, [signedIn, router]);
 
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
@@ -39,6 +47,8 @@ export default function SignIn() {
 					signedIn: true,
 					user: data.user,
 				});
+
+				router.push('/');
 			} else {
 				updateApiResponse({
 					message: data.message || 'An unexpected error occurred',
@@ -68,7 +78,7 @@ export default function SignIn() {
 				name="email"
 				type="email"
 				value={email}
-				onChange={(e) => setEmail(e.target.value)}
+				onChange={(event) => setEmail(event.target.value)}
 			/>
 			<Input
 				label="Password"
@@ -76,10 +86,15 @@ export default function SignIn() {
 				name="password"
 				type="password"
 				value={password}
-				onChange={(e) => setPassword(e.target.value)}
+				onChange={(event) => setPassword(event.target.value)}
 			/>
 			<FeedbackMessage />
-			<SubmitButton cta="Sign in" disabled={isLoading} />
+			<Button
+				type="submit"
+				text={isLoading ? 'Signing in...' : 'Sign in'}
+				variant={isLoading ? 'secondary' : 'primary'}
+				disabled={isLoading}
+			/>
 			<FormLink target="/create-account" text="Create account instead" />
 		</Form>
 	);

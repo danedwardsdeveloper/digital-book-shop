@@ -9,7 +9,7 @@ const displayAllItemsForTesting = false;
 interface MenuItem {
 	name: string;
 	href: string;
-	showWhen: 'always' | 'signedIn' | 'signedOut' | 'test';
+	showWhen: 'always' | 'signedIn' | 'signedOut' | 'itemsInCart' | 'test';
 }
 
 const menuItems: MenuItem[] = [
@@ -17,12 +17,14 @@ const menuItems: MenuItem[] = [
 	{ name: 'Create account', href: '/create-account', showWhen: 'signedOut' },
 	{ name: 'Sign in', href: '/sign-in', showWhen: 'signedOut' },
 	{ name: 'Account', href: '/account', showWhen: 'signedIn' },
-	{ name: 'Cart', href: '/cart', showWhen: 'always' },
+	{ name: 'Cart', href: '/cart', showWhen: 'itemsInCart' },
 ];
 
 export default function MenuBar() {
 	const pathname = usePathname();
-	const { signedIn } = useApiContext();
+	const { signedIn, cart } = useApiContext();
+
+	const hasItemsInCart = cart.length > 0;
 
 	const visibleMenuItems = displayAllItemsForTesting
 		? menuItems
@@ -30,7 +32,8 @@ export default function MenuBar() {
 				(item) =>
 					item.showWhen === 'always' ||
 					(signedIn && item.showWhen === 'signedIn') ||
-					(!signedIn && item.showWhen === 'signedOut')
+					(!signedIn && item.showWhen === 'signedOut') ||
+					(hasItemsInCart && item.showWhen === 'itemsInCart')
 		  );
 
 	return (

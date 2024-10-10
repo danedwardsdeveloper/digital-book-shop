@@ -162,7 +162,7 @@ export function ToggleCartButton({
 	return (
 		<button
 			onClick={handleToggle}
-			className="text-gray-500 hover:underline focus:outline-none lowercase"
+			className={'hover:underline text-gray-500'}
 		>
 			{isRemoved ? 'add' : 'remove'}
 		</button>

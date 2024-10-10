@@ -6,6 +6,7 @@ import type { StaticBook } from '@/types';
 import { ToggleCartButton } from './Buttons';
 import { books } from '@/library/books';
 import { useApiContext } from '@/components/Providers';
+import { TextButton } from './NewButtons';
 
 function DownloadLink({ book }: { book: StaticBook }) {
 	return (
@@ -41,7 +42,11 @@ export default function OrderTable({ type }: OrderTableProps) {
 		);
 	}, [cartBooks, cart]);
 
-	const total = activeBooks.reduce((sum, book) => sum + book.price, 0);
+	const numberOfItemsMessage = `Total: (${activeBooks.length} item${
+		activeBooks.length !== 1 ? 's' : ''
+	})`;
+
+	const orderTotal = activeBooks.reduce((sum, book) => sum + book.price, 0);
 
 	const handleToggle = (slug: string) => {
 		const cartItem = cart.find((item) => item.slug === slug);
@@ -74,16 +79,16 @@ export default function OrderTable({ type }: OrderTableProps) {
 					</thead>
 				)}
 				<tbody>
-					{books.map((book) => {
+					{cartBooks.map((book) => {
 						const cartItem = cart.find((item) => item.slug === book.slug);
 						const removedCartItem = cartItem?.removed;
 
 						return (
 							<tr key={book.slug}>
-								<td className="py-3 pr-4 w-2/3">
+								<td className="py-3 pr-4 w-2/5">
 									<span
 										className={clsx('text-base', {
-											'line-through': removedCartItem,
+											'line-through opacity-50': removedCartItem,
 										})}
 									>
 										{book.title}
@@ -91,13 +96,13 @@ export default function OrderTable({ type }: OrderTableProps) {
 									<br />
 									<span
 										className={clsx('text-sm text-gray-600', {
-											'line-through': removedCartItem,
+											'line-through opacity-50': removedCartItem,
 										})}
 									>
 										{book.author}
 									</span>
 								</td>
-								<td className="py-3 w-1/6 text-right">
+								<td className="py-3 w-2/5 text-right">
 									{type === 'purchaseHistory' ? (
 										<span>5</span>
 									) : (
@@ -108,13 +113,13 @@ export default function OrderTable({ type }: OrderTableProps) {
 										/>
 									)}
 								</td>
-								<td className="py-3 pl-4 w-1/6 text-right">
+								<td className="py-3 pl-4 w-1/5 text-right">
 									{type === 'purchaseHistory' ? (
 										<DownloadLink book={book} />
 									) : (
 										<span
 											className={clsx('text-sm text-gray-600', {
-												'line-through': removedCartItem,
+												' line-through opacity-50': removedCartItem,
 											})}
 										>{`£${book.price.toFixed(2)}`}</span>
 									)}
@@ -125,9 +130,9 @@ export default function OrderTable({ type }: OrderTableProps) {
 					{type === 'orderSummary' && (
 						<tr className="border-t border-gray-300">
 							<td className="py-3"></td>
-							<td className="py-3 px-4 text-right font-bold">Total</td>
+							<td className="py-3 text-right">{numberOfItemsMessage}</td>
 							<td className="py-3 pl-4 text-right font-semibold">
-								£{total.toFixed(2)}
+								£{orderTotal.toFixed(2)}
 							</td>
 						</tr>
 					)}
