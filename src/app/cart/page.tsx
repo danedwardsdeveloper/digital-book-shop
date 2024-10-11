@@ -1,20 +1,19 @@
 'use client';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
-import { NavButton } from '@/components/Buttons';
 import Container from '@/components/Container';
 import OrderTable from '@/components/OrderTable';
 import { useApiContext } from '@/components/Providers';
 import { FeedbackMessage } from '@/components/FeedbackMessage';
-import { Button } from '@/components/NewButtons';
+import { Button, NavButton } from '@/components/NewButtons';
 
 export default function Cart() {
-	const { cart } = useApiContext();
-
-	const activeCartItems = cart.filter((item) => !item.removed);
-
-	const { updateApiResponse } = useApiContext();
+	const { cart, updateApiResponse } = useApiContext();
 	const [isLoading, setIsLoading] = useState(false);
+
+	const activeCartItems = useMemo(() => {
+		return cart.filter((item) => !item.removed);
+	}, [cart]);
 
 	const handleCheckout = async () => {
 		setIsLoading(true);
@@ -66,12 +65,12 @@ export default function Cart() {
 				<FeedbackMessage />
 				<Button
 					text={isLoading ? 'Processing...' : 'Checkout'}
-					disabled={isLoading}
+					disabled={isLoading || activeCartItems.length === 0}
 					onClick={handleCheckout}
 				/>
 				<NavButton
 					href={'/'}
-					cta={'Continue shopping'}
+					text={'Continue shopping'}
 					variant={'secondary'}
 				/>
 			</Container>
