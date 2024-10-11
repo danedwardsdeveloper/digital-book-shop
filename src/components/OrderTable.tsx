@@ -3,32 +3,32 @@ import { useMemo } from 'react';
 import clsx from 'clsx';
 
 import type { StaticBook } from '@/types';
-import { ToggleCartButton } from './Buttons';
 import { books } from '@/library/books';
-import { useApiContext } from '@/components/Providers';
+import { useApiContext, useCart } from '@/components/Providers';
 import { TextButton } from './NewButtons';
 
-function DownloadLink({ book }: { book: StaticBook }) {
-	return (
-		<a
-			href={`/api/download/${book.slug}`}
-			className=" text-gray-600 cursor-pointer hover:underline"
-			onClick={(e) => {
-				e.preventDefault();
-				window.location.href = `/api/download/${book.slug}`;
-			}}
-		>
-			Download
-		</a>
-	);
-}
+// function DownloadLink({ book }: { book: StaticBook }) {
+// 	return (
+// 		<a
+// 			href={`/api/download/${book.slug}`}
+// 			className=" text-gray-600 cursor-pointer hover:underline"
+// 			onClick={(e) => {
+// 				e.preventDefault();
+// 				window.location.href = `/api/download/${book.slug}`;
+// 			}}
+// 		>
+// 			Download
+// 		</a>
+// 	);
+// }
 
 interface OrderTableProps {
 	type: 'orderSummary' | 'purchaseHistory';
 }
 
 export default function OrderTable({ type }: OrderTableProps) {
-	const { cart, addToCart, removeFromCart } = useApiContext();
+	const { cart } = useApiContext();
+	const { toggleCartItem } = useCart();
 
 	const cartBooks = useMemo(() => {
 		return books.filter((book) =>
@@ -48,14 +48,18 @@ export default function OrderTable({ type }: OrderTableProps) {
 
 	const orderTotal = activeBooks.reduce((sum, book) => sum + book.price, 0);
 
-	const handleToggle = (slug: string) => {
-		const cartItem = cart.find((item) => item.slug === slug);
-		if (cartItem?.removed) {
-			addToCart(slug);
-		} else {
-			removeFromCart(slug);
-		}
-	};
+	const handleToggleCart =
+		(slug: string) => async (event: React.MouseEvent<HTMLButtonElement>) => {
+			event.preventDefault();
+			await toggleCartItem(slug);
+		};
+
+	const handleDownload =
+		(slug: string) => async (event: React.MouseEvent<HTMLButtonElement>) => {
+			event.preventDefault();
+			window.location.href = `/api/download/${slug}`;
+		};
+
 	return (
 		<>
 			<div className="w-2/3 mx-auto mt-8 mb-2 pb-2">
@@ -106,16 +110,18 @@ export default function OrderTable({ type }: OrderTableProps) {
 									{type === 'purchaseHistory' ? (
 										<span>5</span>
 									) : (
-										<ToggleCartButton
-											slug={book.slug}
-											isRemoved={removedCartItem || false}
-											onToggle={handleToggle}
+										<TextButton
+											text={removedCartItem ? 'add' : 'remove'}
+											onClick={handleToggleCart(book.slug)}
 										/>
 									)}
 								</td>
 								<td className="py-3 pl-4 w-1/5 text-right">
 									{type === 'purchaseHistory' ? (
-										<DownloadLink book={book} />
+										<TextButton
+											text={''}
+											onClick={handleDownload(book.slug)}
+										/>
 									) : (
 										<span
 											className={clsx('text-sm text-gray-600', {
