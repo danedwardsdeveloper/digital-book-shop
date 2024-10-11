@@ -15,6 +15,7 @@ interface ApiContextType extends ApiResponse {
 	removeFromCart: (slug: string) => Promise<void>;
 	getCart: () => CartItem[];
 	isInCart: (slug: string) => boolean;
+	toggleCartItem: (slug: string) => Promise<void>;
 	mergeCartsOnLogin: (user: UserType) => Promise<void>;
 }
 
@@ -77,6 +78,14 @@ export function Providers({ children }: { children: ReactNode }) {
 		return cart.some((item) => item.slug === slug && !item.removed);
 	};
 
+	const toggleCartItem = async (slug: string) => {
+		if (isInCart(slug)) {
+			await removeFromCart(slug);
+		} else {
+			await addToCart(slug);
+		}
+	};
+
 	const mergeCartsOnLogin = async (user: UserType) => {
 		const localCart = getCart();
 		for (const item of localCart) {
@@ -96,6 +105,7 @@ export function Providers({ children }: { children: ReactNode }) {
 		removeFromCart,
 		getCart,
 		isInCart,
+		toggleCartItem,
 		mergeCartsOnLogin,
 	};
 
@@ -121,6 +131,7 @@ export function useCart() {
 		removeFromCart,
 		getCart,
 		isInCart,
+		toggleCartItem,
 		mergeCartsOnLogin,
 	} = useApiContext();
 	return {
@@ -129,6 +140,7 @@ export function useCart() {
 		removeFromCart,
 		getCart,
 		isInCart,
+		toggleCartItem,
 		mergeCartsOnLogin,
 	};
 }
