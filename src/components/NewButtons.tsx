@@ -72,23 +72,6 @@ export function Button({
 	);
 }
 
-interface NavButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-	classes: string;
-}
-
-export function NavButton() {
-	return <button></button>;
-}
-
-/*
-TextButton
-    <button /> looks like text
-- onClick
-- disabled
-- text
-- aria label?
-*/
-
 interface TextButtonProps
 	extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	text: string;
@@ -149,22 +132,36 @@ export function CartButtons({ slug }: CartItem) {
 	);
 }
 
-/* 
-Button
-    <button />
-- onClick
-- disabled
-- text
-- variant
-- classes?
-- aria label?
+interface NavButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+	href: string;
+	text: string;
+	variant?: Variants;
+	disabled?: boolean;
+	ariaLabel?: string;
+	classes?: string;
+}
 
-NavButton
-    <Link /> styled to look like a button
-    role="button"
-- href
-- text
-- variant
-- classes?
-- aria label?
-*/
+export function NavButton({
+	href,
+	text,
+	variant = 'primary',
+	disabled,
+	ariaLabel,
+	classes,
+}: NavButtonProps) {
+	return (
+		<Link
+			href={href}
+			className={clsx(
+				baseStyles,
+				'text-center',
+				variantMap[variant],
+				disabled && disabledStyles,
+				classes
+			)}
+			aria-label={ariaLabel}
+		>
+			{text}
+		</Link>
+	);
+}
