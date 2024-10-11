@@ -1,23 +1,11 @@
 'use client';
 import clsx from 'clsx';
 
-import { DeleteButton, SubmitButton } from '@/components/Buttons';
+import { type UserType } from '@/types';
 import OrderTable from '@/components/OrderTable';
-import { StaticBook, UserType } from '@/types';
-import { books } from '@/library/books';
 import { useApiContext } from '@/components/Providers';
-
-// interface User {
-// 	name: string;
-// 	email: string;
-// 	purchased: StaticBook[];
-// }
-
-// const tempUser: User = {
-// 	name: 'Pippi Longstocking',
-// 	email: 'pippi@longstockingenterprises.se',
-// 	purchased: books,
-// };
+import { Button } from '@/components/NewButtons';
+import Container from '@/components/Container';
 
 interface GridListItemProps {
 	label: string;
@@ -77,12 +65,15 @@ export default function Account() {
 				<h2 className="text-xl font-semibold">Account details</h2>
 				<AccountDetails user={user} />
 			</div>
-			{/* Fix this! */}
-			{/* {hasPurchased && 
-			} */}
-			<OrderTable type={'purchaseHistory'} />
+			{hasPurchased ? (
+				<OrderTable type={'purchaseHistory'} />
+			) : (
+				<Container>
+					<h2 className="text-lg font-semibold">No purchases</h2>
+				</Container>
+			)}
 			<div className="mt-8 w-2/3 mx-auto">
-				<SubmitButton cta={'Sign out'} variant={'secondary'} />
+				<Button text={'Sign out'} variant={'secondary'} />
 			</div>
 			<div
 				className={clsx(
@@ -96,7 +87,11 @@ export default function Account() {
 				<h2 className="font-semibold text-base text-red-500 mb-4">
 					Danger zone
 				</h2>
-				<DeleteButton onClick={confirmDelete} />
+				<Button
+					text={'Delete account'}
+					onClick={confirmDelete}
+					variant="delete"
+				/>
 			</div>
 		</>
 	);
