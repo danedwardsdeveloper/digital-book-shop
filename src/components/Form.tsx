@@ -19,6 +19,7 @@ interface InputProps {
 	name: string;
 	type: string;
 	value: string;
+	autoComplete: 'given-name' | 'email' | 'new-password' | 'current-password';
 	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	placeholder?: string;
 }
@@ -28,9 +29,10 @@ export function Input({
 	id,
 	name,
 	type,
-	placeholder,
 	value,
+	autoComplete,
 	onChange,
+	placeholder,
 }: InputProps) {
 	return (
 		<div className="flex items-center justify-between">
@@ -43,6 +45,7 @@ export function Input({
 				name={name}
 				required
 				value={value}
+				autoComplete={autoComplete}
 				onChange={onChange}
 				placeholder={placeholder}
 				className="w-2/3 border border-gray-400 bg-gray-100 p-2 rounded-md"
