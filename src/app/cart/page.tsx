@@ -1,11 +1,15 @@
 'use client';
 import { useState, useMemo } from 'react';
+import { loadStripe } from '@stripe/stripe-js';
 
+import { stripePublishableKey } from '@/library/clientEnvironment';
 import Container from '@/components/Container';
 import OrderTable from '@/components/OrderTable';
 import { useApiContext } from '@/components/Providers';
 import { FeedbackMessage } from '@/components/FeedbackMessage';
 import { Button, NavButton } from '@/components/NewButtons';
+
+const stripePromise = loadStripe(stripePublishableKey);
 
 export default function Cart() {
 	const { cart, updateApiResponse } = useApiContext();
@@ -38,7 +42,28 @@ export default function Cart() {
 					message: 'Redirecting to secure checkout...',
 					status: 'success',
 				});
-				window.location.href = `https://checkout.stripe.com/pay/${data.sessionId}`;
+
+				const stripe = await stripePromise;
+				if (stripe) {
+					const { error } = await stripe.redirectToCheckout({
+						sessionId: data.sessionId,
+					});
+
+					if (error) {
+						console.error('Stripe redirect error:', error);
+						updateApiResponse({
+							message:
+								'Unable to redirect to checkout. Please try again.',
+							status: 'error',
+						});
+					}
+				} else {
+					updateApiResponse({
+						message:
+							'Unable to initialize payment system. Please try again later.',
+						status: 'error',
+					});
+				}
 			} else {
 				updateApiResponse({
 					message:
