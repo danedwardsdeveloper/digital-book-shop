@@ -1,16 +1,17 @@
-export function validateVariable(variableName: string): string {
+// clientEnvironment.ts
+
+export function validateClientVariable(variableName: string): string {
 	const value = process.env[variableName];
-	if (!value) {
-		throw new Error(`Environment variable ${variableName} is missing`);
+	if (typeof window !== 'undefined' && !value) {
+		console.error(`Environment variable ${variableName} is missing`);
 	}
-	return value;
+	return value || '';
 }
 
-const nodeEnv = validateVariable('NODE_ENV');
-
-if (!nodeEnv) {
-	throw new Error('NODE_ENV missing');
-}
+const nodeEnv = validateClientVariable('NEXT_PUBLIC_NODE_ENV');
+const stripePublishableKey = validateClientVariable(
+	'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY'
+);
 
 const isProduction = nodeEnv === 'production';
 const isDevelopment = nodeEnv === 'development';
@@ -25,4 +26,5 @@ export {
 	developmentBaseURL,
 	productionBaseURL,
 	dynamicBaseURL,
+	stripePublishableKey,
 };
