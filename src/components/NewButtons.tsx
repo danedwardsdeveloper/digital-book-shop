@@ -2,9 +2,9 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
-import { CartItem } from '@/types';
+import type { CartItem, ApiResponse } from '@/types';
 import { useState } from 'react';
-import { useCart } from '@/components/Providers';
+import { useCart, useApiContext } from '@/components/Providers';
 
 const baseStyles = clsx(
 	'w-full p-2',
@@ -91,9 +91,10 @@ export function TextButton({ text, onClick, ariaLabel }: TextButtonProps) {
 	);
 }
 
-export function CartButtons({ slug }: CartItem) {
+export function CartButton({ slug }: CartItem) {
 	const router = useRouter();
 	const { isInCart, addToCart, removeFromCart } = useCart();
+	const { updateApiResponse } = useApiContext();
 	const [isLoading, setIsLoading] = useState(false);
 
 	const inCart = isInCart(slug);
@@ -102,14 +103,46 @@ export function CartButtons({ slug }: CartItem) {
 		setIsLoading(true);
 
 		try {
+			let response: Response;
 			if (inCart) {
-				await removeFromCart(slug);
+				response = await fetch(`/api/cart/remove/${slug}`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+				});
 			} else {
-				await addToCart(slug);
-				router.push('/cart');
+				response = await fetch(`/api/cart/add/${slug}`, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+				});
+			}
+
+			const data: ApiResponse = await response.json();
+
+			if (response.ok && data.status === 'success') {
+				if (inCart) {
+					await removeFromCart(slug);
+				} else {
+					await addToCart(slug);
+					router.push('/cart');
+				}
+				updateApiResponse(data);
+			} else {
+				console.error('Error modifying cart:', data.message);
+				updateApiResponse({
+					status: 'error',
+					message: data.message || 'Failed to modify cart',
+				});
 			}
 		} catch (error) {
 			console.error('Error modifying cart:', error);
+			updateApiResponse({
+				status: 'error',
+				message: 'An unexpected error occurred',
+			});
 		} finally {
 			setIsLoading(false);
 		}
