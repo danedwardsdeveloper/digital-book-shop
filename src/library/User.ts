@@ -4,7 +4,7 @@ import { mongoURI } from '@/app/api/serverEnvironment';
 interface IUser extends Document {
 	name: string;
 	email: string;
-	cart: { slug: string }[];
+	cart: { slug: string; removed?: boolean }[];
 	purchased: { slug: string; downloads: number }[];
 }
 
@@ -12,7 +12,12 @@ const UserSchema: Schema = new Schema({
 	name: { type: String, required: true },
 	email: { type: String, required: true, unique: true },
 	password: { type: String, required: true },
-	cart: [{ slug: { type: String, required: true } }],
+	cart: [
+		{
+			slug: { type: String, required: true },
+			removed: { type: Boolean, default: false },
+		},
+	],
 	purchased: [
 		{
 			slug: { type: String, required: true },
