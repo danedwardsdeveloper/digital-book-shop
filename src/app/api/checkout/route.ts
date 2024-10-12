@@ -13,6 +13,17 @@ const stripe = new Stripe(stripeSecretKey, {
 	apiVersion: '2024-09-30.acacia',
 });
 
+type StripeLineItem = {
+	price_data: {
+		currency: string;
+		product_data: {
+			name: string;
+		};
+		unit_amount: number;
+	};
+	quantity: number;
+};
+
 export async function POST(req: NextRequest) {
 	try {
 		await connectToDatabase();
@@ -36,21 +47,47 @@ export async function POST(req: NextRequest) {
 			);
 		}
 
-		const session = await stripe.checkout.sessions.create({
-			payment_method_types: ['card'],
-			line_items: user.cart.map((item: CartItem) => {
-				const book = books.find((b) => b.slug === item.slug);
+		const activeCartItems = user.cart.filter(
+			(item: CartItem) => !item.removed
+		);
+
+		if (activeCartItems.length === 0) {
+			return NextResponse.json(
+				{ status: 'error' as ApiStatus, message: 'Your cart is empty' },
+				{ status: 400 }
+			);
+		}
+
+		const lineItems: (StripeLineItem | null)[] = activeCartItems
+			.map((item: CartItem) => {
+				const book = books.find((book) => book.slug === item.slug);
+				if (!book) {
+					console.error(`Book not found for slug: ${item.slug}`);
+					return null;
+				}
 				return {
 					price_data: {
 						currency: 'gbp',
 						product_data: {
-							name: book ? book.title : 'Unknown Book',
+							name: book.title,
 						},
-						unit_amount: book ? book.price * 100 : 0,
+						unit_amount: book.price * 100,
 					},
 					quantity: 1,
 				};
-			}),
+			})
+			.filter((item: StripeLineItem) => item !== null);
+
+		if (lineItems.length === 0) {
+			return NextResponse.json(
+				{ status: 'error' as ApiStatus, message: 'No valid items in cart' },
+				{ status: 400 }
+			);
+		}
+
+		const session = await stripe.checkout.sessions.create({
+			payment_method_types: ['card'],
+			line_items: lineItems,
 			mode: 'payment',
 			success_url: `${dynamicBaseURL}/account`,
 			cancel_url: `${dynamicBaseURL}/`,
