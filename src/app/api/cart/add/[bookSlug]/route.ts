@@ -79,8 +79,9 @@ export async function POST(
 				{ status: 200 }
 			);
 		} else {
-			user.cart.push({ slug: bookSlug });
+			user.cart.push({ slug: bookSlug, removed: false });
 			await user.save();
+			// ToDo: add the name of the book
 			message = 'Book added to cart';
 			statusCode = 200;
 		}
