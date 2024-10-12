@@ -78,6 +78,7 @@ export default function SignIn() {
 				name="email"
 				type="email"
 				value={email}
+				autoComplete="email"
 				onChange={(event) => setEmail(event.target.value)}
 			/>
 			<Input
@@ -86,6 +87,7 @@ export default function SignIn() {
 				name="password"
 				type="password"
 				value={password}
+				autoComplete="current-password"
 				onChange={(event) => setPassword(event.target.value)}
 			/>
 			<FeedbackMessage />
