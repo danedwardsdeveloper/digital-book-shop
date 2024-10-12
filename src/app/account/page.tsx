@@ -59,6 +59,9 @@ export default function Account() {
 
 	const hasPurchased = user.purchased.length;
 
+	// ToDo
+	// function handleSignOut() {}
+
 	return (
 		<>
 			<div className="space-y-4 mt-8 mb-12 w-2/3 mx-auto">
@@ -69,11 +72,15 @@ export default function Account() {
 				<OrderTable type={'purchaseHistory'} />
 			) : (
 				<Container>
-					<h2 className="text-lg font-semibold">No purchases</h2>
+					<h2 className="text-lg font-semibold">No purchases yet</h2>
 				</Container>
 			)}
 			<div className="mt-8 w-2/3 mx-auto">
-				<Button text={'Sign out'} variant={'secondary'} />
+				<Button
+					text={'Sign out'}
+					variant={'secondary'}
+					// onClick={handleSignOut}
+				/>
 			</div>
 			<div
 				className={clsx(
