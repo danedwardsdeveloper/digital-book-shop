@@ -1,3 +1,4 @@
+'use server';
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
@@ -11,7 +12,7 @@ import type {
 } from '@/types';
 import { User, connectToDatabase } from '@/library/User';
 import { books } from '@/library/books';
-import { jwtSecret } from '../serverEnvironment';
+import { jwtSecret } from '@/library/environment';
 
 export async function GET() {
 	try {

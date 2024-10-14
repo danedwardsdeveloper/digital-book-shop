@@ -1,10 +1,14 @@
+'use server';
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 import Stripe from 'stripe';
 
-import { jwtSecret, stripeSecretKey } from '../serverEnvironment';
-import { dynamicBaseURL } from '@/library/clientEnvironment';
+import {
+	stripeSecretKey,
+	jwtSecret,
+	dynamicBaseURL,
+} from '@/library/environment';
 import type { ApiStatus, CartItem, Token } from '@/types';
 import { User, connectToDatabase } from '@/library/User';
 import { books } from '@/library/books';

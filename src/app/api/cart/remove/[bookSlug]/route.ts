@@ -1,8 +1,9 @@
+'use server';
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
-import { jwtSecret } from '@/app/api/serverEnvironment';
+import { jwtSecret } from '@/library/environment';
 import { createCookieOptions } from '@/library/cookies';
 import { User, connectToDatabase } from '@/library/User';
 import type { ApiResponse, ApiStatus, Token, CartItem } from '@/types';

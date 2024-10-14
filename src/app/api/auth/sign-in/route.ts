@@ -1,8 +1,9 @@
+'use server';
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-import { jwtSecret } from '@/app/api/serverEnvironment';
+import { jwtSecret } from '@/library/environment';
 import { User, connectToDatabase } from '@/library/User';
 import { Token } from '@/types';
 import { createCookieOptions } from '@/library/cookies';
