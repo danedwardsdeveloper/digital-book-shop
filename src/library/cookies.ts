@@ -1,4 +1,4 @@
-import { isProduction } from './clientEnvironment';
+import { isProduction } from './environment';
 
 type CookieOptions = {
 	name: string;
