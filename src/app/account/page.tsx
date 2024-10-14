@@ -1,10 +1,11 @@
 'use client';
+import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
 
-import { type UserType } from '@/types';
+import { useAuth } from '@/providers/AuthProvider';
+import { ApiResponse, type UserType } from '@/types';
 import OrderTable from '@/components/OrderTable';
-import { useApiContext } from '@/components/Providers';
-import { Button } from '@/components/NewButtons';
+import { Button } from '@/components/Buttons';
 import Container from '@/components/Container';
 
 interface GridListItemProps {
@@ -34,24 +35,13 @@ function AccountDetails({ user }: AccountDetailsProps) {
 	);
 }
 
-function confirmDelete(event: React.MouseEvent<HTMLButtonElement>) {
-	event.preventDefault();
-	event.stopPropagation();
-
-	if (
-		window.confirm(
-			'Are you sure you want to delete your account?\nAccess to previously purchased books will be lost.'
-		)
-	) {
-		console.log('Account deletion confirmed');
-		alert('Your account has been deleted.');
-	} else {
-		console.log('Account deletion cancelled');
-	}
-}
-
 export default function Account() {
-	const { user } = useApiContext();
+	const router = useRouter();
+	const { user, updateApiResponse, isLoading } = useAuth();
+
+	if (isLoading) {
+		return <p>Loading...</p>;
+	}
 
 	if (!user) {
 		return <p>Not signed in</p>;
@@ -59,8 +49,93 @@ export default function Account() {
 
 	const hasPurchased = user.purchased.length;
 
-	// ToDo
-	// function handleSignOut() {}
+	async function handleSignOut() {
+		try {
+			const response = await fetch('/api/auth/sign-out', {
+				method: 'POST',
+				credentials: 'include',
+			});
+
+			const data: ApiResponse = await response.json();
+
+			if (response.ok) {
+				localStorage.removeItem('cart');
+
+				updateApiResponse({
+					message: data.message,
+					status: data.status,
+					signedIn: false,
+					user: null,
+				});
+
+				router.push('/');
+			} else {
+				throw new Error(
+					data.message || 'An error occurred during sign out'
+				);
+			}
+		} catch (error) {
+			console.error('Error during sign out:', error);
+			updateApiResponse({
+				message:
+					error instanceof Error
+						? error.message
+						: 'An error occurred during sign out',
+				status: 'error',
+				signedIn: true,
+			});
+		}
+	}
+
+	function confirmDelete(event: React.MouseEvent<HTMLButtonElement>) {
+		event.preventDefault();
+		event.stopPropagation();
+
+		const isConfirmed = window.confirm(
+			'Are you sure you want to delete your account?\nAccess to previously purchased books will be lost.'
+		);
+		if (isConfirmed) {
+			handleDelete();
+		}
+	}
+
+	async function handleDelete() {
+		try {
+			const response = await fetch('/api/auth/delete-account', {
+				method: 'DELETE',
+				credentials: 'include',
+			});
+
+			const data: ApiResponse = await response.json();
+
+			if (response.ok) {
+				localStorage.removeItem('cart');
+
+				updateApiResponse({
+					message: data.message,
+					status: data.status,
+					signedIn: false,
+					user: null,
+				});
+
+				router.push('/');
+			} else {
+				throw new Error(
+					data.message ||
+						'An error occurred while attempting to delete your account'
+				);
+			}
+		} catch (error) {
+			updateApiResponse({
+				message:
+					error instanceof Error
+						? error.message
+						: 'An error occurred while attempting to delete your account',
+				status: 'error',
+				signedIn: true,
+			});
+		}
+	}
 
 	return (
 		<>
@@ -79,7 +154,7 @@ export default function Account() {
 				<Button
 					text={'Sign out'}
 					variant={'secondary'}
-					// onClick={handleSignOut}
+					onClick={handleSignOut}
 				/>
 			</div>
 			<div
