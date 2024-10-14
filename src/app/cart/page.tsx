@@ -2,17 +2,19 @@
 import { useState, useMemo } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 
-import { stripePublishableKey } from '@/library/clientEnvironment';
+import { stripePublishableKey } from '@/library/environment';
 import Container from '@/components/Container';
 import OrderTable from '@/components/OrderTable';
-import { useApiContext } from '@/components/Providers';
+import { useCart } from '@/providers/CartProvider';
+import { useAuth } from '@/providers/AuthProvider';
 import { FeedbackMessage } from '@/components/FeedbackMessage';
-import { Button, NavButton } from '@/components/NewButtons';
+import { Button, NavButton } from '@/components/Buttons';
 
 const stripePromise = loadStripe(stripePublishableKey);
 
 export default function Cart() {
-	const { cart, updateApiResponse } = useApiContext();
+	const { cart } = useCart();
+	const { updateApiResponse } = useAuth();
 	const [isLoading, setIsLoading] = useState(false);
 
 	const activeCartItems = useMemo(() => {
