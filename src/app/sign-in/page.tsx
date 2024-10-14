@@ -2,14 +2,16 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-import type { ApiResponse } from '@/types';
-import { useApiContext } from '@/components/Providers';
+import { useCart } from '@/providers/CartProvider';
+import { useAuth } from '@/providers/AuthProvider';
+import { type CartItem, type ApiResponse } from '@/types';
 import { Form, FormLink, FormSpacer, Input } from '@/components/Form';
 import { FeedbackMessage } from '@/components/FeedbackMessage';
-import { Button } from '@/components/NewButtons';
+import { Button } from '@/components/Buttons';
 
 export default function SignIn() {
-	const { updateApiResponse, mergeCartsOnLogin, signedIn } = useApiContext();
+	const { updateApiResponse, signedIn } = useAuth();
+	const { mergeCartsOnLogin } = useCart();
 	const [email, setEmail] = useState('dan@gmail.com');
 	const [password, setPassword] = useState('securePassword');
 	const [isLoading, setIsLoading] = useState(false);
@@ -22,7 +24,22 @@ export default function SignIn() {
 		}
 	}, [signedIn, router]);
 
-	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+	const mergeCarts = (
+		localCart: CartItem[],
+		userCart: CartItem[]
+	): CartItem[] => {
+		const mergedCart = new Map<string, CartItem>();
+
+		[...localCart, ...userCart].forEach((item) => {
+			if (!item.removed) {
+				mergedCart.set(item.slug, item);
+			}
+		});
+
+		return Array.from(mergedCart.values());
+	};
+
+	async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 		updateApiResponse({ message: '', status: 'info' });
 		setIsLoading(true);
@@ -41,11 +58,16 @@ export default function SignIn() {
 			if (response.ok && data.user) {
 				await mergeCartsOnLogin(data.user);
 
+				const updatedUser = {
+					...data.user,
+					cart: data.user.cart,
+				};
+
 				updateApiResponse({
-					message: `Welcome ${data.user.name}` || 'Sign in successful',
+					message: `Welcome back, ${data.user.name}!`,
 					status: data.status,
 					signedIn: true,
-					user: data.user,
+					user: updatedUser,
 				});
 
 				router.push('/');
@@ -67,7 +89,7 @@ export default function SignIn() {
 		} finally {
 			setIsLoading(false);
 		}
-	};
+	}
 
 	return (
 		<Form onSubmit={handleSubmit}>
