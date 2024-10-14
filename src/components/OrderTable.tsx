@@ -2,32 +2,16 @@
 import { useMemo } from 'react';
 import clsx from 'clsx';
 
-import type { StaticBook } from '@/types';
 import { books } from '@/library/books';
-import { useApiContext, useCart } from '@/components/Providers';
-import { TextButton } from './NewButtons';
-
-// function DownloadLink({ book }: { book: StaticBook }) {
-// 	return (
-// 		<a
-// 			href={`/api/download/${book.slug}`}
-// 			className=" text-gray-600 cursor-pointer hover:underline"
-// 			onClick={(e) => {
-// 				e.preventDefault();
-// 				window.location.href = `/api/download/${book.slug}`;
-// 			}}
-// 		>
-// 			Download
-// 		</a>
-// 	);
-// }
+import { useCart } from '@/providers/CartProvider';
+import { CartButton, TextButton } from './Buttons';
 
 interface OrderTableProps {
 	type: 'orderSummary' | 'purchaseHistory';
 }
 
 export default function OrderTable({ type }: OrderTableProps) {
-	const { cart } = useApiContext();
+	const { cart } = useCart();
 	const { toggleCartItem } = useCart();
 
 	const cartBooks = useMemo(() => {
@@ -47,12 +31,6 @@ export default function OrderTable({ type }: OrderTableProps) {
 	})`;
 
 	const orderTotal = activeBooks.reduce((sum, book) => sum + book.price, 0);
-
-	const handleToggleCart =
-		(slug: string) => async (event: React.MouseEvent<HTMLButtonElement>) => {
-			event.preventDefault();
-			await toggleCartItem(slug);
-		};
 
 	const handleDownload =
 		(slug: string) => async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -110,10 +88,7 @@ export default function OrderTable({ type }: OrderTableProps) {
 									{type === 'purchaseHistory' ? (
 										<span>5</span>
 									) : (
-										<TextButton
-											text={removedCartItem ? 'add' : 'remove'}
-											onClick={handleToggleCart(book.slug)}
-										/>
+										<CartButton slug={book.slug} variant={'text'} />
 									)}
 								</td>
 								<td className="py-3 pl-4 w-1/5 text-right">
