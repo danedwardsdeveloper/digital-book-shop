@@ -1,5 +1,6 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { mongoURI } from '@/app/api/serverEnvironment';
+
+import { mongodbUri } from './environment';
 
 interface IUser extends Document {
 	name: string;
@@ -36,5 +37,5 @@ export async function connectToDatabase() {
 		return;
 	}
 
-	return connect(mongoURI);
+	return connect(mongodbUri);
 }
