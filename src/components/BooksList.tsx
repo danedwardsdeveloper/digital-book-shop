@@ -15,6 +15,7 @@ export default function BooksList() {
 									<Image
 										src={book.image}
 										alt={`${book.title} by ${book.author} cover`}
+										priority={index < 2}
 										className="w-full rounded-lg"
 									/>
 								</div>
