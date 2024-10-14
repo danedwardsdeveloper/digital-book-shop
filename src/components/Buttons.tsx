@@ -1,170 +1,208 @@
-// 'use client';
-// import { useState } from 'react';
-// import Link from 'next/link';
-// import clsx from 'clsx';
+'use client';
+import { useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import clsx from 'clsx';
 
-// import { CartItem } from '@/types';
-// import { useCart } from './Providers';
+import { useAuth } from '@/providers/AuthProvider';
+import { useCart } from '@/providers/CartProvider';
+import { type CartItem, type ApiResponse } from '@/types';
 
-// const baseButtonStyles = clsx(
-// 	'font-semibold',
-// 	'w-full p-2',
-// 	'rounded-md',
-// 	'transition-colors duration-200'
-// );
+const baseStyles = clsx(
+	'w-full p-2',
+	'rounded',
+	'font-semibold',
+	'transition-colors duration-200'
+	// focus states
+);
 
-// const primaryColourStyles = clsx(
-// 	'bg-gray-400',
-// 	'hover:bg-gray-500',
-// 	'active:bg-gray-600',
-// 	'text-black'
-// );
+const disabledStyles = 'cursor-not-allowed bg-gray-300 hover:bg-gray-300';
 
-// const secondaryColourStyles = clsx(
-// 	'bg-gray-200',
-// 	'border border-gray-300',
-// 	'hover:bg-gray-300',
-// 	'active:bg-gray-400',
-// 	'text-gray-800 hover:text-gray-900'
-// );
+const variantMap = {
+	primary: clsx('bg-blue-500 hover:bg-blue-600', 'text-white'),
+	secondary: clsx(
+		'bg-gray-200',
+		'border border-gray-300',
+		'hover:bg-gray-300',
+		'active:bg-gray-400',
+		'text-gray-800 hover:text-gray-900'
+	),
+	delete: clsx(
+		'bg-red-400',
+		'hover:bg-red-500',
+		'active:bg-red-600',
+		'text-black'
+	),
+};
 
-// const deleteColorStyles = clsx(
-// 	'bg-red-400',
-// 	'hover:bg-red-500',
-// 	'active:bg-red-600',
-// 	'text-black'
-// );
+type Variants = keyof typeof variantMap;
 
-// interface SubmitButtonProps
-// 	extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-// 	cta:
-// 		| 'Sign in'
-// 		| 'Create account'
-// 		| 'Buy now'
-// 		| 'Add to cart'
-// 		| 'Sign out'
-// 		| 'In cart'
-// 		| 'Adding...';
-// 	variant?: 'primary' | 'secondary';
-// 	classes?: string;
-// }
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+	text: string;
+	type?: 'button' | 'submit';
+	onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
+	variant?: Variants;
+	disabled?: boolean;
+	ariaLabel?: string;
+	classes?: string;
+}
 
-// export function SubmitButton({
-// 	cta,
-// 	type = 'submit',
-// 	variant = 'primary',
-// 	classes,
-// 	...props
-// }: SubmitButtonProps) {
-// 	const colourStyles =
-// 		variant === 'primary' ? primaryColourStyles : secondaryColourStyles;
-// 	return (
-// 		<button
-// 			type={type}
-// 			className={clsx(baseButtonStyles, colourStyles, classes)}
-// 			{...props}
-// 		>
-// 			{cta}
-// 		</button>
-// 	);
-// }
+export function Button({
+	text,
+	type = 'button',
+	variant = 'primary',
+	onClick,
+	disabled,
+	ariaLabel,
+	classes,
+}: ButtonProps) {
+	return (
+		<button
+			type={type}
+			onClick={onClick}
+			disabled={disabled}
+			aria-label={ariaLabel}
+			className={clsx(
+				baseStyles,
+				variantMap[variant],
+				disabled && disabledStyles,
+				classes
+			)}
+		>
+			{text}
+		</button>
+	);
+}
 
-// interface DeleteButtonProps
-// 	extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-// 	classes?: string;
-// }
+interface TextButtonProps
+	extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+	text: string;
+	onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+	ariaLabel?: string;
+}
 
-// export function DeleteButton({ classes, ...props }: DeleteButtonProps) {
-// 	return (
-// 		<button
-// 			type="button"
-// 			className={clsx(baseButtonStyles, deleteColorStyles, classes)}
-// 			{...props}
-// 		>
-// 			Delete account
-// 		</button>
-// 	);
-// }
+export function TextButton({ text, onClick, ariaLabel }: TextButtonProps) {
+	return (
+		<button
+			onClick={onClick}
+			aria-label={ariaLabel}
+			className="bg-none text-gray-500 hover:underline"
+		>
+			{text}
+		</button>
+	);
+}
 
-// interface NavButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-// 	href: string;
-// 	cta: string;
-// 	variant?: 'primary' | 'secondary';
-// }
+interface CartButtonProps {
+	slug: string;
+	variant: 'button' | 'text';
+}
 
-// export function NavButton({
-// 	href,
-// 	cta,
-// 	variant = 'primary',
-// 	...props
-// }: NavButtonProps) {
-// 	const colourStyles =
-// 		variant === 'primary' ? primaryColourStyles : secondaryColourStyles;
+export function CartButton({ slug, variant }: CartButtonProps) {
+	const router = useRouter();
+	const { isInCart, toggleCartItem } = useCart();
+	const { updateApiResponse, signedIn } = useAuth();
+	const [isLoading, setIsLoading] = useState(false);
 
-// 	return (
-// 		<button
-// 			className={clsx('text-center', baseButtonStyles, colourStyles)}
-// 			{...props}
-// 		>
-// 			<Link
-// 				href={href}
-// 				className="w-full h-full flex items-center justify-center"
-// 			>
-// 				{cta}
-// 			</Link>
-// 		</button>
-// 	);
-// }
+	const inCart = isInCart(slug);
 
-// export function CartButton({ slug }: CartItem) {
-// 	const { addToCart, isInCart } = useCart();
-// 	const [isLoading, setIsLoading] = useState(false);
-// 	const inCart = isInCart(slug);
+	const handleToggleCart = async () => {
+		setIsLoading(true);
 
-// 	const handleAddToCart = async () => {
-// 		if (inCart) return;
+		try {
+			await toggleCartItem(slug);
 
-// 		setIsLoading(true);
-// 		try {
-// 			await addToCart(slug);
-// 		} catch (error) {
-// 			console.error('Error adding item to cart:', error);
-// 		} finally {
-// 			setIsLoading(false);
-// 		}
-// 	};
+			if (signedIn) {
+				const endpoint = inCart
+					? `/api/cart/remove/${slug}`
+					: `/api/cart/add/${slug}`;
+				const response = await fetch(endpoint, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+				});
 
-// 	return (
-// 		<SubmitButton
-// 			classes={'my-8'}
-// 			cta={inCart ? 'In cart' : isLoading ? 'Adding...' : 'Add to cart'}
-// 			onClick={handleAddToCart}
-// 			disabled={inCart || isLoading}
-// 		/>
-// 	);
-// }
+				const data: ApiResponse = await response.json();
 
-// interface ToggleCartButtonProps {
-// 	slug: string;
-// 	isRemoved: boolean;
-// 	onToggle: (slug: string) => void;
-// }
+				if (response.ok && data.status === 'success') {
+					updateApiResponse(data);
+					if (!inCart) {
+						router.push('/cart');
+					}
+				} else {
+					console.error('Error modifying cart:', data.message);
+					updateApiResponse({
+						status: 'error',
+						message: data.message || 'Failed to modify cart',
+					});
+				}
+			} else if (!inCart) {
+				router.push('/cart');
+			}
+		} catch (error) {
+			console.error('Error modifying cart:', error);
+			updateApiResponse({
+				status: 'error',
+				message: 'An unexpected error occurred',
+			});
+		} finally {
+			setIsLoading(false);
+		}
+	};
 
-// export function ToggleCartButton({
-// 	slug,
-// 	isRemoved,
-// 	onToggle,
-// }: ToggleCartButtonProps) {
-// 	const handleToggle = async () => {
-// 		onToggle(slug);
-// 	};
+	return variant === 'button' ? (
+		<Button
+			text={
+				inCart
+					? 'Remove from cart'
+					: isLoading
+					? 'Updating...'
+					: 'Add to cart'
+			}
+			onClick={handleToggleCart}
+			variant={inCart ? 'secondary' : 'primary'}
+			disabled={isLoading}
+		/>
+	) : (
+		<TextButton
+			text={inCart ? 'remove' : 'add'}
+			onClick={handleToggleCart}
+			ariaLabel={`${inCart ? 'remove from' : 'add to'} cart`}
+		/>
+	);
+}
 
-// 	return (
-// 		<button
-// 			onClick={handleToggle}
-// 			className={'hover:underline text-gray-500'}
-// 		>
-// 			{isRemoved ? 'add' : 'remove'}
-// 		</button>
-// 	);
-// }
+interface NavButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+	href: string;
+	text: string;
+	variant?: Variants;
+	disabled?: boolean;
+	ariaLabel?: string;
+	classes?: string;
+}
+
+export function NavButton({
+	href,
+	text,
+	variant = 'primary',
+	disabled,
+	ariaLabel,
+	classes,
+}: NavButtonProps) {
+	return (
+		<Link
+			href={href}
+			className={clsx(
+				baseStyles,
+				'text-center',
+				variantMap[variant],
+				disabled && disabledStyles,
+				classes
+			)}
+			aria-label={ariaLabel}
+		>
+			{text}
+		</Link>
+	);
+}
