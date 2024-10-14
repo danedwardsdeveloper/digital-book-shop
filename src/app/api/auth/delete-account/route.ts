@@ -1,8 +1,8 @@
+'use server';
 import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 
-import { isProduction } from '@/library/clientEnvironment';
-import { jwtSecret } from '@/app/api/serverEnvironment';
+import { isProduction, jwtSecret } from '@/library/environment';
 import { type Token } from '@/types';
 import { connectToDatabase, User } from '@/library/User';
 
