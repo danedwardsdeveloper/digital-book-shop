@@ -1,5 +1,5 @@
 'use client';
-import { useApiContext } from '@/components/Providers';
+import { useAuth } from '@/providers/AuthProvider';
 import { type ApiStatus } from '@/types';
 import clsx from 'clsx';
 
@@ -15,7 +15,7 @@ function getStatusColorClass(status: ApiStatus): string {
 }
 
 export function FeedbackMessage() {
-	const { message, status } = useApiContext();
+	const { message, status } = useAuth();
 
 	return (
 		<p className={clsx('text-center h-6', getStatusColorClass(status))}>
