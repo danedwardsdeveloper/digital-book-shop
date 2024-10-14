@@ -3,13 +3,15 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 import type { ApiResponse } from '@/types';
-import { useApiContext } from '@/components/Providers';
+import { useAuth } from '@/providers/AuthProvider';
+import { useCart } from '@/providers/CartProvider';
 import { Form, FormLink, FormSpacer, Input } from '@/components/Form';
 import { FeedbackMessage } from '@/components/FeedbackMessage';
-import { Button } from '@/components/NewButtons';
+import { Button } from '@/components/Buttons';
 
 export default function CreateAccount() {
-	const { updateApiResponse, mergeCartsOnLogin, signedIn } = useApiContext();
+	const { updateApiResponse, signedIn } = useAuth();
+	const { mergeCartsOnLogin } = useCart();
 	const [name, setName] = useState('Test Name');
 	const [email, setEmail] = useState('@gmail.com');
 	const [password, setPassword] = useState('securePassword');
