@@ -3,7 +3,7 @@ import Image from 'next/image';
 import clsx from 'clsx';
 
 import { books } from '@/library/books';
-import { CartButton } from '@/components/NewButtons';
+import { CartButton } from '@/components/Buttons';
 
 export default function BookPage({ params }: { params: { slug: string } }) {
 	const book = books.find((book) => book.slug === params.slug);
@@ -37,7 +37,7 @@ export default function BookPage({ params }: { params: { slug: string } }) {
 					</div>
 					<p>£{book.price.toFixed(2)}</p>
 					<p className="text-gray-700">{`This exclusive digital edition is meticulously typeset to bring ${book.author}'s prose to life for contemporary readers. Purchase now and lose yourself in this unforgettable classic!`}</p>
-					<CartButton slug={book.slug} />
+					<CartButton slug={book.slug} variant={'button'} />
 				</div>
 			</div>
 			<div className="space-y-4">
