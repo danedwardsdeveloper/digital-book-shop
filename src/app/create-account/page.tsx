@@ -12,9 +12,9 @@ import { Button } from '@/components/Buttons';
 export default function CreateAccount() {
 	const { updateApiResponse, signedIn } = useAuth();
 	const { mergeLocalAndDatabaseCarts } = useCart();
-	const [name, setName] = useState('Test Name');
-	const [email, setEmail] = useState('@gmail.com');
-	const [password, setPassword] = useState('securePassword');
+	const [name, setName] = useState('');
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
 
 	const router = useRouter();
@@ -81,6 +81,7 @@ export default function CreateAccount() {
 				type="text"
 				value={name}
 				autoComplete="given-name"
+				dataTestId="name-input"
 				onChange={(event) => setName(event.target.value)}
 			/>
 			<Input
@@ -90,6 +91,7 @@ export default function CreateAccount() {
 				type="email"
 				value={email}
 				autoComplete="email"
+				dataTestId="email-input"
 				onChange={(event) => setEmail(event.target.value)}
 			/>
 			<Input
@@ -99,6 +101,7 @@ export default function CreateAccount() {
 				type="password"
 				value={password}
 				autoComplete="new-password"
+				dataTestId="password-input"
 				onChange={(event) => setPassword(event.target.value)}
 			/>
 			<FeedbackMessage />
@@ -107,6 +110,7 @@ export default function CreateAccount() {
 				text={isLoading ? 'Creating account...' : 'Create account'}
 				variant={isLoading ? 'secondary' : 'primary'}
 				disabled={isLoading}
+				dataTestId="create-account-button"
 			/>
 			<FormLink target={'/sign-in'} text={'Sign in instead'} />
 		</Form>
