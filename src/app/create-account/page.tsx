@@ -5,13 +5,13 @@ import { useRouter } from 'next/navigation';
 import type { ApiResponse } from '@/types';
 import { useAuth } from '@/providers/AuthProvider';
 import { useCart } from '@/providers/CartProvider';
-import { Form, FormLink, FormSpacer, Input } from '@/components/Form';
+import { Form, FormLink, Input } from '@/components/Form';
 import { FeedbackMessage } from '@/components/FeedbackMessage';
 import { Button } from '@/components/Buttons';
 
 export default function CreateAccount() {
 	const { updateApiResponse, signedIn } = useAuth();
-	const { mergeCartsOnLogin } = useCart();
+	const { mergeLocalAndDatabaseCarts } = useCart();
 	const [name, setName] = useState('Test Name');
 	const [email, setEmail] = useState('@gmail.com');
 	const [password, setPassword] = useState('securePassword');
@@ -42,7 +42,7 @@ export default function CreateAccount() {
 			const data: ApiResponse = await response.json();
 
 			if (response.ok && data.user) {
-				await mergeCartsOnLogin(data.user);
+				await mergeLocalAndDatabaseCarts(data.user);
 
 				updateApiResponse({
 					message: `Welcome ${data.user.name}! Your account has been created.`,
@@ -55,7 +55,7 @@ export default function CreateAccount() {
 			} else {
 				updateApiResponse({
 					message: data.message || 'An unexpected error occurred',
-					status: data.status,
+					status: data.status || 'error',
 					signedIn: false,
 					user: null,
 				});
