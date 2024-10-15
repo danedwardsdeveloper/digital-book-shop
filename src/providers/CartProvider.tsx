@@ -15,7 +15,8 @@ interface CartContextType {
 	getCart: () => CartItem[];
 	isInCart: (slug: string) => boolean;
 	toggleCartItem: (slug: string) => Promise<void>;
-	mergeCartsOnLogin: (user: UserType) => Promise<void>;
+	mergeLocalAndDatabaseCarts: (user: UserType) => Promise<void>;
+	clearCart: () => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -32,6 +33,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
 	const updateLocalStorage = (newCart: CartItem[]) => {
 		localStorage.setItem('cart', JSON.stringify(newCart));
+	};
+
+	const clearCart = () => {
+		setCart([]);
+		updateLocalStorage([]);
 	};
 
 	const addToCart = async (slug: string) => {
@@ -83,15 +89,34 @@ export function CartProvider({ children }: { children: ReactNode }) {
 		});
 	};
 
-	const mergeCartsOnLogin = async (user: UserType) => {
+	const mergeLocalAndDatabaseCarts = async (user: UserType) => {
 		const localCart = getCart();
-		for (const item of localCart) {
-			if (!user.cart.some((cartItem) => cartItem.slug === item.slug)) {
-				await addToCart(item.slug);
+		const mergedCart = [...user.cart];
+
+		for (const localItem of localCart) {
+			if (!mergedCart.some((item) => item.slug === localItem.slug)) {
+				mergedCart.push(localItem);
 			}
 		}
-		setCart([]);
-		updateLocalStorage([]);
+
+		setCart(mergedCart);
+		updateLocalStorage(mergedCart);
+
+		try {
+			const response = await fetch('/api/user/sync-cart', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ cart: mergedCart }),
+			});
+
+			if (!response.ok) {
+				console.error('Failed to sync cart with backend');
+			}
+		} catch (error) {
+			console.error('Error syncing cart with backend:', error);
+		}
 	};
 
 	const contextValue: CartContextType = {
@@ -101,7 +126,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
 		getCart,
 		isInCart,
 		toggleCartItem,
-		mergeCartsOnLogin,
+		mergeLocalAndDatabaseCarts,
+		clearCart,
 	};
 
 	return (
