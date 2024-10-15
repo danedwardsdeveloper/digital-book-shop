@@ -11,7 +11,7 @@ import { Button } from '@/components/Buttons';
 
 export default function SignIn() {
 	const { updateApiResponse, signedIn } = useAuth();
-	const { mergeCartsOnLogin } = useCart();
+	const { mergeLocalAndDatabaseCarts } = useCart();
 	const [email, setEmail] = useState('dan@gmail.com');
 	const [password, setPassword] = useState('securePassword');
 	const [isLoading, setIsLoading] = useState(false);
@@ -56,25 +56,20 @@ export default function SignIn() {
 			const data: ApiResponse = await response.json();
 
 			if (response.ok && data.user) {
-				await mergeCartsOnLogin(data.user);
-
-				const updatedUser = {
-					...data.user,
-					cart: data.user.cart,
-				};
+				await mergeLocalAndDatabaseCarts(data.user);
 
 				updateApiResponse({
 					message: `Welcome back, ${data.user.name}!`,
 					status: data.status,
 					signedIn: true,
-					user: updatedUser,
+					user: data.user,
 				});
 
 				router.push('/');
 			} else {
 				updateApiResponse({
 					message: data.message || 'An unexpected error occurred',
-					status: data.status,
+					status: data.status || 'error',
 					signedIn: false,
 					user: null,
 				});
