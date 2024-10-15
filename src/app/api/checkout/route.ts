@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 import Stripe from 'stripe';
 
-import { dynamicBaseURL } from '../environment';
+import { dynamicBaseURL } from '@/library/environment';
 import type { ApiStatus, CartItem, Token } from '@/types';
 import { User, connectToDatabase } from '@/library/User';
 import { books } from '@/library/books';
