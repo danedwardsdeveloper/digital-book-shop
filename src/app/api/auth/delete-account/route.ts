@@ -2,8 +2,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 
-import { isProduction, jwtSecret } from '@/library/environment';
-import { type Token } from '@/types';
+import { isProduction } from '@/library/environment';
+import { ApiResponse, type Token } from '@/types';
 import { connectToDatabase, User } from '@/library/User';
 
 export async function DELETE(request: NextRequest) {
@@ -23,7 +23,7 @@ export async function DELETE(request: NextRequest) {
 
 		let decodedToken: Token;
 		try {
-			decodedToken = jwt.verify(token, jwtSecret) as Token;
+			decodedToken = jwt.verify(token, process.env.JWT_SECRET!) as Token;
 		} catch (error) {
 			return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
 		}
@@ -38,7 +38,9 @@ export async function DELETE(request: NextRequest) {
 
 		const response = NextResponse.json({
 			message: 'Account deleted successfully',
+			status: 'success',
 		});
+
 		response.cookies.set('token', '', {
 			httpOnly: true,
 			secure: isProduction,
