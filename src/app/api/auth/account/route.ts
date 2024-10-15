@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
-import { jwtSecret } from '@/library/environment';
 import { User, connectToDatabase } from '@/library/User';
 import { Token } from '@/types';
 
@@ -19,7 +18,10 @@ export async function GET() {
 		}
 
 		try {
-			const decodedToken = jwt.verify(token.value, jwtSecret) as Token;
+			const decodedToken = jwt.verify(
+				token.value,
+				process.env.JWT_SECRET!
+			) as Token;
 
 			const user = await User.findById(decodedToken.sub);
 

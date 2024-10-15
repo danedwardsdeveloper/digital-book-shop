@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-import { jwtSecret } from '@/library/environment';
 import { User, connectToDatabase } from '@/library/User';
 import { Token } from '@/types';
 import { createCookieOptions } from '@/library/cookies';
@@ -49,7 +48,7 @@ export async function POST(request: Request) {
 			exp: Math.floor(Date.now() / 1000) + 60 * 60,
 		};
 
-		const token = jwt.sign(tokenPayload, jwtSecret);
+		const token = jwt.sign(tokenPayload, process.env.JWT_SECRET!);
 
 		const response = NextResponse.json({
 			status: 'success',

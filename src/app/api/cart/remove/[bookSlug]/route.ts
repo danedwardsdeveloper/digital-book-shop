@@ -3,10 +3,11 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
-import { jwtSecret } from '@/library/environment';
 import { createCookieOptions } from '@/library/cookies';
 import { User, connectToDatabase } from '@/library/User';
 import type { ApiResponse, ApiStatus, Token, CartItem } from '@/types';
+
+const jwtSecret = process.env.JWT_SECRET!;
 
 export async function POST(
 	request: Request,

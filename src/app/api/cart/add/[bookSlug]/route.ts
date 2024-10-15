@@ -7,7 +7,8 @@ import type { ApiResponse, CartItem, Token, UserType } from '@/types';
 import { createCookieOptions } from '@/library/cookies';
 import { User, connectToDatabase } from '@/library/User';
 import { books } from '@/library/books';
-import { jwtSecret } from '@/library/environment';
+
+const jwtSecret = process.env.JWT_SECRET!;
 
 export async function POST(
 	request: Request,

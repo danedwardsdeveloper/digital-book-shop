@@ -2,7 +2,6 @@
 import { useState, useMemo } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 
-import { stripePublishableKey } from '@/library/environment';
 import Container from '@/components/Container';
 import OrderTable from '@/components/OrderTable';
 import { useCart } from '@/providers/CartProvider';
@@ -10,7 +9,13 @@ import { useAuth } from '@/providers/AuthProvider';
 import { FeedbackMessage } from '@/components/FeedbackMessage';
 import { Button, NavButton } from '@/components/Buttons';
 
-const stripePromise = loadStripe(stripePublishableKey);
+const useRealMoney = process.env.NEXT_PUBLIC_USE_REAL_MONEY === 'true';
+
+const stripePublicKey = useRealMoney
+	? process.env.NEXT_PUBLIC_STRIPE_LIVE_KEY!
+	: process.env.NEXT_PUBLIC_STRIPE_TEST_KEY!;
+
+const stripePromise = loadStripe(stripePublicKey);
 
 export default function Cart() {
 	const { cart } = useCart();

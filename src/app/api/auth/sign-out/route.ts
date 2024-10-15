@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
-import { jwtSecret } from '@/library/environment';
 import { createCookieOptions } from '@/library/cookies';
 import { User, connectToDatabase } from '@/library/User';
 import type { ApiResponse, ApiStatus, Token } from '@/types';
@@ -25,7 +24,10 @@ export async function POST(): Promise<NextResponse<ApiResponse>> {
 	}
 
 	try {
-		const decodedToken = jwt.verify(token.value, jwtSecret) as Token;
+		const decodedToken = jwt.verify(
+			token.value,
+			process.env.JWT_SECRET!
+		) as Token;
 
 		await connectToDatabase();
 

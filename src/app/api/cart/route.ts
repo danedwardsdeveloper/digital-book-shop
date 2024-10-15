@@ -12,7 +12,6 @@ import type {
 } from '@/types';
 import { User, connectToDatabase } from '@/library/User';
 import { books } from '@/library/books';
-import { jwtSecret } from '@/library/environment';
 
 export async function GET() {
 	try {
@@ -33,7 +32,7 @@ export async function GET() {
 		let decoded: Token;
 
 		try {
-			decoded = jwt.verify(token.value, jwtSecret) as Token;
+			decoded = jwt.verify(token.value, process.env.JWT_SECRET!) as Token;
 		} catch (error) {
 			return NextResponse.json<ApiResponse>({
 				status: 'error',

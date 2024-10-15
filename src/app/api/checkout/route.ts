@@ -4,29 +4,22 @@ import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 import Stripe from 'stripe';
 
-import {
-	stripeSecretKey,
-	jwtSecret,
-	dynamicBaseURL,
-} from '@/library/environment';
+import { dynamicBaseURL } from '../environment';
 import type { ApiStatus, CartItem, Token } from '@/types';
 import { User, connectToDatabase } from '@/library/User';
 import { books } from '@/library/books';
+
+const useRealMoney = process.env.NEXT_PUBLIC_USE_REAL_MONEY === 'true';
+
+const stripeSecretKey = useRealMoney
+	? process.env.STRIPE_SECRET_KEY!
+	: process.env.STRIPE_SECRET_TEST_KEY!;
 
 const stripe = new Stripe(stripeSecretKey, {
 	apiVersion: '2024-09-30.acacia',
 });
 
-type StripeLineItem = {
-	price_data: {
-		currency: string;
-		product_data: {
-			name: string;
-		};
-		unit_amount: number;
-	};
-	quantity: number;
-};
+type StripeLineItem = Stripe.Checkout.SessionCreateParams.LineItem;
 
 export async function POST(req: NextRequest) {
 	try {
@@ -40,7 +33,7 @@ export async function POST(req: NextRequest) {
 			);
 		}
 
-		const decodedToken = jwt.verify(token, jwtSecret) as Token;
+		const decodedToken = jwt.verify(token, process.env.JWT_SECRET!) as Token;
 		const userId = decodedToken.sub;
 
 		const user = await User.findById(userId);
@@ -62,7 +55,7 @@ export async function POST(req: NextRequest) {
 			);
 		}
 
-		const lineItems: (StripeLineItem | null)[] = activeCartItems
+		const lineItems: StripeLineItem[] = activeCartItems
 			.map((item: CartItem) => {
 				const book = books.find((book) => book.slug === item.slug);
 				if (!book) {
@@ -95,6 +88,7 @@ export async function POST(req: NextRequest) {
 			mode: 'payment',
 			success_url: `${dynamicBaseURL}/account`,
 			cancel_url: `${dynamicBaseURL}/`,
+			client_reference_id: userId,
 		});
 
 		return NextResponse.json({ status: 'success', sessionId: session.id });
