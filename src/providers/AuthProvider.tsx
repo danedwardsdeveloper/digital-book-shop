@@ -9,13 +9,14 @@ import {
 import { type ApiResponse, type UserType } from '@/types';
 
 interface AuthContextType extends Omit<ApiResponse, 'cart'> {
-	updateApiResponse: (newApiResponse: Partial<ApiResponse>) => void;
+	signedIn: boolean;
 	isLoading: boolean;
+	updateApiResponse: (newApiResponse: Partial<ApiResponse>) => void;
+	signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// ToDo: add error feedback
 export async function validateToken() {
 	try {
 		const response = await fetch('/api/auth/account', {
@@ -34,16 +35,46 @@ export async function validateToken() {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+	const [user, setUser] = useState<UserType | null>(null);
+	const [isLoading, setIsLoading] = useState(true);
 	const [apiResponse, setApiResponse] = useState<ApiResponse>({
 		message: null,
 		status: 'info',
 		signedIn: false,
 		user: null,
 	});
-	const [isLoading, setIsLoading] = useState(true);
 
 	const updateApiResponse = (newApiResponse: Partial<ApiResponse>) => {
-		setApiResponse((prevState) => ({ ...prevState, ...newApiResponse }));
+		setApiResponse((prevState) => {
+			const updatedState = { ...prevState, ...newApiResponse };
+			setUser(updatedState.user);
+			return updatedState;
+		});
+	};
+
+	const signOut = async () => {
+		try {
+			const response = await fetch('/api/auth/sign-out', {
+				method: 'POST',
+				credentials: 'include',
+			});
+			const data = await response.json();
+			updateApiResponse({
+				message: data.message,
+				status: data.status,
+				signedIn: false,
+				user: null,
+			});
+			localStorage.removeItem('cart');
+		} catch (error) {
+			console.error('Sign-out error:', error);
+			updateApiResponse({
+				message: 'An error occurred during sign-out',
+				status: 'error',
+				signedIn: apiResponse.signedIn,
+				user: apiResponse.user,
+			});
+		}
 	};
 
 	useEffect(() => {
@@ -70,6 +101,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		...apiResponse,
 		updateApiResponse,
 		isLoading,
+		signOut,
 	};
 
 	return (
