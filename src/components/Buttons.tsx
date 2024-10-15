@@ -42,6 +42,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	type?: 'button' | 'submit';
 	onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 	variant?: Variants;
+	dataTestId?: string;
 	disabled?: boolean;
 	ariaLabel?: string;
 	classes?: string;
@@ -51,6 +52,7 @@ export function Button({
 	text,
 	type = 'button',
 	variant = 'primary',
+	dataTestId,
 	onClick,
 	disabled,
 	ariaLabel,
@@ -62,6 +64,7 @@ export function Button({
 			onClick={onClick}
 			disabled={disabled}
 			aria-label={ariaLabel}
+			data-test-id={dataTestId}
 			className={clsx(
 				baseStyles,
 				variantMap[variant],
