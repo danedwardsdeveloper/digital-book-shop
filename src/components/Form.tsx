@@ -19,6 +19,7 @@ interface InputProps {
 	name: string;
 	type: string;
 	value: string;
+	dataTestId: string;
 	autoComplete: 'given-name' | 'email' | 'new-password' | 'current-password';
 	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	placeholder?: string;
@@ -30,6 +31,7 @@ export function Input({
 	name,
 	type,
 	value,
+	dataTestId,
 	autoComplete,
 	onChange,
 	placeholder,
@@ -48,6 +50,7 @@ export function Input({
 				autoComplete={autoComplete}
 				onChange={onChange}
 				placeholder={placeholder}
+				data-test-id={dataTestId}
 				className="w-2/3 border border-gray-400 bg-gray-100 p-2 rounded-md"
 			/>
 		</div>
