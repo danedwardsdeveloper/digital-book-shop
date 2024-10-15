@@ -18,7 +18,10 @@ export function FeedbackMessage() {
 	const { message, status } = useAuth();
 
 	return (
-		<p className={clsx('text-center h-6', getStatusColorClass(status))}>
+		<p
+			data-test-id="feedback-message"
+			className={clsx('text-center h-6', getStatusColorClass(status))}
+		>
 			{message}
 		</p>
 	);
