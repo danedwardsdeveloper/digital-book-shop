@@ -7,6 +7,7 @@ import { ApiResponse, type UserType } from '@/types';
 import OrderTable from '@/components/OrderTable';
 import { Button } from '@/components/Buttons';
 import Container from '@/components/Container';
+import { FeedbackMessage } from '@/components/FeedbackMessage';
 
 interface GridListItemProps {
 	label: string;
@@ -37,7 +38,7 @@ function AccountDetails({ user }: AccountDetailsProps) {
 
 export default function Account() {
 	const router = useRouter();
-	const { user, updateApiResponse, isLoading } = useAuth();
+	const { user, updateApiResponse, isLoading, signOut } = useAuth();
 
 	if (isLoading) {
 		return <p>Loading...</p>;
@@ -50,41 +51,8 @@ export default function Account() {
 	const hasPurchased = user.purchased.length;
 
 	async function handleSignOut() {
-		try {
-			const response = await fetch('/api/auth/sign-out', {
-				method: 'POST',
-				credentials: 'include',
-			});
-
-			const data: ApiResponse = await response.json();
-
-			if (response.ok) {
-				localStorage.removeItem('cart');
-
-				updateApiResponse({
-					message: data.message,
-					status: data.status,
-					signedIn: false,
-					user: null,
-				});
-
-				router.push('/');
-			} else {
-				throw new Error(
-					data.message || 'An error occurred during sign out'
-				);
-			}
-		} catch (error) {
-			console.error('Error during sign out:', error);
-			updateApiResponse({
-				message:
-					error instanceof Error
-						? error.message
-						: 'An error occurred during sign out',
-				status: 'error',
-				signedIn: true,
-			});
-		}
+		await signOut();
+		router.push('/');
 	}
 
 	function confirmDelete(event: React.MouseEvent<HTMLButtonElement>) {
@@ -156,11 +124,14 @@ export default function Account() {
 					variant={'secondary'}
 					onClick={handleSignOut}
 				/>
+				<div className="my-4">
+					<FeedbackMessage />
+				</div>
 			</div>
 			<div
 				className={clsx(
 					'w-2/3 mx-auto',
-					'mt-24   py-4 px-4',
+					'mt-12   py-4 px-4',
 					'rounded',
 					'border border-red-200',
 					'bg-red-100'
