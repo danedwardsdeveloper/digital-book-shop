@@ -1,116 +1,126 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
-import { setupBrowser, closeBrowser, page } from './puppeteer';
-import { getByTestId } from './puppeteer';
-
-const BASE_URL = 'http://localhost:3000/';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { page, closeBrowser } from './setup.test';
+import {
+	verifySignedInNavbar,
+	verifySignedOutNavbar,
+	verifyFeedbackMessage,
+	getByTestId,
+	clickBookLink,
+	verifyAddToCart,
+} from './utilities.test';
+import { setupTest, BASE_URL } from './setup.test';
 
 describe('Digital Book Shop', () => {
 	beforeAll(async () => {
-		await setupBrowser();
-
-		await page.goto(BASE_URL, { waitUntil: 'networkidle0' });
-
-		const session = await page.createCDPSession();
-		await session.send('Network.clearBrowserCookies');
-		await session.send('Network.clearBrowserCache');
-
-		await page.evaluate(() => {
-			localStorage.clear();
-		});
-
-		await page.reload({ waitUntil: 'networkidle0' });
+		await setupTest();
 	});
 
 	afterAll(async () => {
 		await closeBrowser();
 	});
 
-	it('should have signed-out navigation elements', async () => {
-		await page.waitForSelector('[data-test-id="nav-home"]');
-		const homeLink = await getByTestId(page, 'nav-home');
-		expect(homeLink).not.toBeNull();
-
-		const createAccountLink = await getByTestId(page, 'nav-create-account');
-		expect(createAccountLink).not.toBeNull();
-
-		const signInLink = await getByTestId(page, 'nav-sign-in');
-		expect(signInLink).not.toBeNull();
-
-		const cartLink = await getByTestId(page, 'nav-cart');
-		expect(cartLink).not.toBeNull();
+	it('should display correct navbar items when signed out', async () => {
+		await page.goto(BASE_URL);
+		await verifySignedOutNavbar();
 	});
 
 	it('should create an account', async () => {
 		await page.goto(`${BASE_URL}/create-account`, {
 			waitUntil: 'networkidle0',
 		});
-
-		await page.waitForSelector('[data-test-id="name-input"]');
-		await page.type('[data-test-id="name-input"]', 'Test');
-		await page.type('[data-test-id="email-input"]', 'test@gmail.com');
-		await page.type('[data-test-id="password-input"]', 'securePassword');
-
+		await page.waitForSelector('[data-testid="name-input"]');
+		await page.type('[data-testid="name-input"]', 'Test');
+		await page.type('[data-testid="email-input"]', 'test@gmail.com');
+		await page.type('[data-testid="password-input"]', 'securePassword');
 		await Promise.all([
-			page.click('[data-test-id="create-account-button"]'),
+			page.click('[data-testid="create-account-button"]'),
 			page.waitForNavigation({ waitUntil: 'networkidle0' }),
 		]);
-
 		expect(page.url()).toBe(BASE_URL);
-
-		await page.waitForSelector('[data-test-id="feedback-message"]', {
-			visible: true,
-		});
-		const feedbackMessage = await page.$eval(
-			'[data-test-id="feedback-message"]',
-			(element) => element.textContent
-		);
-		expect(feedbackMessage).toBe(
+		await verifyFeedbackMessage(
 			'Welcome Test! Your account has been created.'
 		);
 	});
 
+	it('should display signed-in navbar items after creating an account', async () => {
+		await page.goto(BASE_URL, {
+			waitUntil: 'networkidle0',
+		});
+		await verifySignedInNavbar();
+	});
+
+	it('should add a book to the cart', async () => {
+		await clickBookLink('dracula');
+		await verifyAddToCart('dracula', 1);
+	});
+
+	it('should redirect to "checkout.stripe.com" after clicking the "Checkout" button', async () => {
+		const checkoutButton = await getByTestId('checkout-button');
+
+		await Promise.all([
+			checkoutButton.click(),
+			page.waitForNavigation({ waitUntil: 'networkidle0' }),
+		]);
+
+		const currentUrl = page.url();
+		expect(currentUrl).toMatch(/^https:\/\/checkout\.stripe\.com/);
+	}, 10000);
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
+	it('should complete Stripe checkout form and redirect to account page', async () => {
+		// Fill out the form
+		await page.type('#email', 'test@gmail.com');
+		await page.type('#cardNumber', '4242424242424242');
+		await page.type('#cardExpiry', '0130');
+		await page.type('#cardCvc', '123');
+		await page.type('#billingName', 'Test Person');
+
+		await page.select('#billingCountry', 'United Kingdom');
+
+		await page.waitForSelector('#billingPostalCode');
+		await page.type('#billingPostalCode', 'SW1A 1AA');
+
+		const submitButton = await getByTestId('hosted-payment-submit-button');
+		await Promise.all([
+			submitButton.click(),
+			page.waitForNavigation({ waitUntil: 'networkidle0' }),
+		]);
+
+		const currentUrl = page.url();
+		expect(currentUrl).toBe(`${BASE_URL}account/`);
+	}, 30000);
+
+	/* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - */
+
 	it('should delete the account', async () => {
 		await page.goto(`${BASE_URL}/account`, { waitUntil: 'networkidle0' });
-
-		await page.waitForSelector('[data-test-id="delete-account-button"]', {
+		await page.waitForSelector('[data-testid="delete-account-button"]', {
 			visible: true,
 			timeout: 5000,
 		});
 		const deleteButton = await page.$(
-			'[data-test-id="delete-account-button"]'
+			'[data-testid="delete-account-button"]'
 		);
 		expect(deleteButton).not.toBeNull();
-
 		page.on('dialog', async (dialog) => {
 			expect(dialog.message()).toContain(
 				'Are you sure you want to delete your account?'
 			);
 			await dialog.accept();
 		});
-
-		await deleteButton!.click();
-
+		await deleteButton?.click();
 		await page.waitForNavigation({ waitUntil: 'networkidle0' });
 	});
 
 	it(`should display an 'account deleted' message`, async () => {
 		expect(page.url()).toBe(BASE_URL);
-
-		await page.waitForSelector('[data-test-id="feedback-message"]', {
-			visible: true,
-		});
-		const feedbackMessage = await page.$eval(
-			'[data-test-id="feedback-message"]',
-			(element) => element.textContent
-		);
-		expect(feedbackMessage).toBe('Account deleted successfully');
+		await verifyFeedbackMessage('Account deleted successfully');
 	});
 
-	it(`Cookies and local storage should be cleared`, async () => {
+	it(`"token" cookie and "cart" local storage should not exist after account deletion`, async () => {
 		const cookies = await page.cookies();
 		const tokenCookie = cookies.find((cookie) => cookie.name === 'token');
 		expect(tokenCookie).toBeUndefined();
-
 		const cartItem = await page.evaluate(() => localStorage.getItem('cart'));
 		expect(cartItem).toBeNull();
 	});
