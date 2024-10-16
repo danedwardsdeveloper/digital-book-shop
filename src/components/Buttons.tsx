@@ -42,7 +42,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	type?: 'button' | 'submit';
 	onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 	variant?: Variants;
-	dataTestId?: string;
+	dataTestID?: string;
 	disabled?: boolean;
 	ariaLabel?: string;
 	classes?: string;
@@ -52,7 +52,7 @@ export function Button({
 	text,
 	type = 'button',
 	variant = 'primary',
-	dataTestId,
+	dataTestID,
 	onClick,
 	disabled,
 	ariaLabel,
@@ -64,7 +64,7 @@ export function Button({
 			onClick={onClick}
 			disabled={disabled}
 			aria-label={ariaLabel}
-			data-test-id={dataTestId}
+			data-testid={dataTestID}
 			className={clsx(
 				baseStyles,
 				variantMap[variant],
@@ -81,15 +81,22 @@ interface TextButtonProps
 	extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	text: string;
 	onClick: (event: React.MouseEvent<HTMLButtonElement>) => void;
+	dataTestID?: string;
 	ariaLabel?: string;
 }
 
-export function TextButton({ text, onClick, ariaLabel }: TextButtonProps) {
+export function TextButton({
+	text,
+	onClick,
+	ariaLabel,
+	dataTestID,
+}: TextButtonProps) {
 	return (
 		<button
 			onClick={onClick}
 			aria-label={ariaLabel}
 			className="bg-none text-gray-500 hover:underline"
+			data-testid={dataTestID}
 		>
 			{text}
 		</button>
@@ -99,9 +106,10 @@ export function TextButton({ text, onClick, ariaLabel }: TextButtonProps) {
 interface CartButtonProps {
 	slug: string;
 	variant: 'button' | 'text';
+	dataTestID?: string;
 }
 
-export function CartButton({ slug, variant }: CartButtonProps) {
+export function CartButton({ slug, variant, dataTestID }: CartButtonProps) {
 	const router = useRouter();
 	const { isInCart, toggleCartItem } = useCart();
 	const { updateApiResponse, signedIn } = useAuth();
@@ -166,12 +174,14 @@ export function CartButton({ slug, variant }: CartButtonProps) {
 			onClick={handleToggleCart}
 			variant={inCart ? 'secondary' : 'primary'}
 			disabled={isLoading}
+			dataTestID={dataTestID}
 		/>
 	) : (
 		<TextButton
 			text={inCart ? 'remove' : 'add'}
 			onClick={handleToggleCart}
 			ariaLabel={`${inCart ? 'remove from' : 'add to'} cart`}
+			dataTestID={dataTestID}
 		/>
 	);
 }
