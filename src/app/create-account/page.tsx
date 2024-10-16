@@ -81,7 +81,7 @@ export default function CreateAccount() {
 				type="text"
 				value={name}
 				autoComplete="given-name"
-				dataTestId="name-input"
+				dataTestID="name-input"
 				onChange={(event) => setName(event.target.value)}
 			/>
 			<Input
@@ -91,7 +91,7 @@ export default function CreateAccount() {
 				type="email"
 				value={email}
 				autoComplete="email"
-				dataTestId="email-input"
+				dataTestID="email-input"
 				onChange={(event) => setEmail(event.target.value)}
 			/>
 			<Input
@@ -101,7 +101,7 @@ export default function CreateAccount() {
 				type="password"
 				value={password}
 				autoComplete="new-password"
-				dataTestId="password-input"
+				dataTestID="password-input"
 				onChange={(event) => setPassword(event.target.value)}
 			/>
 			<FeedbackMessage />
@@ -110,7 +110,7 @@ export default function CreateAccount() {
 				text={isLoading ? 'Creating account...' : 'Create account'}
 				variant={isLoading ? 'secondary' : 'primary'}
 				disabled={isLoading}
-				dataTestId="create-account-button"
+				dataTestID="create-account-button"
 			/>
 			<FormLink target={'/sign-in'} text={'Sign in instead'} />
 		</Form>
