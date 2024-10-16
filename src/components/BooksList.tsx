@@ -9,7 +9,10 @@ export default function BooksList() {
 			<ul className="flex flex-wrap -mx-2 gap-y-4">
 				{books.map((book, index) => (
 					<li key={index} className="group w-full sm:w-1/2">
-						<Link href={`/${book.slug}`}>
+						<Link
+							href={`/${book.slug}`}
+							data-testid={`book-link-${book.slug}`}
+						>
 							<div className="flex space-x-4 p-3 rounded-lg transition duration-150 ease-in-out hover:bg-blue-100">
 								<div className="w-1/2">
 									<Image
