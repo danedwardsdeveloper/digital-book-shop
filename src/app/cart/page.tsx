@@ -99,6 +99,7 @@ export default function Cart() {
 					text={isLoading ? 'Processing...' : 'Checkout'}
 					disabled={isLoading || activeCartItems.length === 0}
 					onClick={handleCheckout}
+					dataTestID={'checkout-button'}
 				/>
 				<NavButton
 					href={'/'}
