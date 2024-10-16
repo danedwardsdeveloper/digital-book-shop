@@ -144,7 +144,7 @@ export default function Account() {
 					text={'Delete account'}
 					onClick={confirmDelete}
 					variant="delete"
-					dataTestId="delete-account-button"
+					dataTestID="delete-account-button"
 				/>
 			</div>
 		</>
