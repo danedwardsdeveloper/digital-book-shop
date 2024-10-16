@@ -84,7 +84,7 @@ export default function MenuBar() {
 						'hover:underline',
 						pathname === menuItem.href && 'underline'
 					)}
-					data-test-id={menuItem.testID}
+					data-testid={menuItem.testID}
 				>
 					{menuItem.name === 'Cart'
 						? formatCartText(activeCartItems)
