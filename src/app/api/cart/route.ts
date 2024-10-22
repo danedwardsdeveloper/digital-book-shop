@@ -34,6 +34,7 @@ export async function GET() {
 		try {
 			decoded = jwt.verify(token.value, process.env.JWT_SECRET!) as Token;
 		} catch (error) {
+			console.error('Invalid token', error);
 			return NextResponse.json<ApiResponse>({
 				status: 'error',
 				message: 'Invalid token',
