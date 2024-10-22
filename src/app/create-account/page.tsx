@@ -61,6 +61,7 @@ export default function CreateAccount() {
 				});
 			}
 		} catch (error) {
+			console.error('An error occurred during account creation', error);
 			updateApiResponse({
 				message: 'An error occurred during account creation',
 				status: 'error',
