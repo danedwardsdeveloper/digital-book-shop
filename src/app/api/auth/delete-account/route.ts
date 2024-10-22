@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 
 import { isProduction } from '@/library/environment';
-import { ApiResponse, type Token } from '@/types';
+import { type Token } from '@/types';
 import { connectToDatabase, User } from '@/library/User';
 
 export async function DELETE(request: NextRequest) {
@@ -25,6 +25,7 @@ export async function DELETE(request: NextRequest) {
 		try {
 			decodedToken = jwt.verify(token, process.env.JWT_SECRET!) as Token;
 		} catch (error) {
+			console.error('JWT verification failed:', error);
 			return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
 		}
 
