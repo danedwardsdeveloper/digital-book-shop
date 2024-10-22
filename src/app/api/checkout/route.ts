@@ -1,5 +1,5 @@
 'use server';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 import Stripe from 'stripe';
@@ -21,7 +21,7 @@ const stripe = new Stripe(stripeSecretKey, {
 
 type StripeLineItem = Stripe.Checkout.SessionCreateParams.LineItem;
 
-export async function POST(req: NextRequest) {
+export async function POST() {
 	try {
 		await connectToDatabase();
 
