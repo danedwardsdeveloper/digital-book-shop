@@ -6,7 +6,7 @@ import clsx from 'clsx';
 
 import { useAuth } from '@/providers/AuthProvider';
 import { useCart } from '@/providers/CartProvider';
-import { type CartItem, type ApiResponse } from '@/types';
+import { type ApiResponse } from '@/types';
 
 const baseStyles = clsx(
 	'w-full p-2',
