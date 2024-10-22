@@ -10,9 +10,9 @@ interface OrderTableProps {
 	type: 'orderSummary' | 'purchaseHistory';
 }
 
+// ToDo: remove purchaseHistory option
 export default function OrderTable({ type }: OrderTableProps) {
 	const { cart } = useCart();
-	const { toggleCartItem } = useCart();
 
 	const cartBooks = useMemo(() => {
 		return books.filter((book) =>
@@ -86,7 +86,11 @@ export default function OrderTable({ type }: OrderTableProps) {
 								</td>
 								<td className="py-3 w-2/5 text-right">
 									{type === 'purchaseHistory' ? (
-										<span>5</span>
+										<span
+											data-testid={`${book.slug}-downloads-remaining`}
+										>
+											5
+										</span>
 									) : (
 										<CartButton slug={book.slug} variant={'text'} />
 									)}
@@ -94,7 +98,8 @@ export default function OrderTable({ type }: OrderTableProps) {
 								<td className="py-3 pl-4 w-1/5 text-right">
 									{type === 'purchaseHistory' ? (
 										<TextButton
-											text={''}
+											text={'Download'}
+											dataTestID={`${book.slug}-download-button`}
 											onClick={handleDownload(book.slug)}
 										/>
 									) : (
