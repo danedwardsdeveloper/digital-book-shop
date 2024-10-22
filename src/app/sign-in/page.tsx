@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 
 import { useCart } from '@/providers/CartProvider';
 import { useAuth } from '@/providers/AuthProvider';
-import { type CartItem, type ApiResponse } from '@/types';
+import { type ApiResponse } from '@/types';
 import { Form, FormLink, FormSpacer, Input } from '@/components/Form';
 import { FeedbackMessage } from '@/components/FeedbackMessage';
 import { Button } from '@/components/Buttons';
@@ -23,21 +23,6 @@ export default function SignIn() {
 			router.push('/');
 		}
 	}, [signedIn, router]);
-
-	const mergeCarts = (
-		localCart: CartItem[],
-		userCart: CartItem[]
-	): CartItem[] => {
-		const mergedCart = new Map<string, CartItem>();
-
-		[...localCart, ...userCart].forEach((item) => {
-			if (!item.removed) {
-				mergedCart.set(item.slug, item);
-			}
-		});
-
-		return Array.from(mergedCart.values());
-	};
 
 	async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault();
@@ -75,6 +60,7 @@ export default function SignIn() {
 				});
 			}
 		} catch (error) {
+			console.error('An error occurred during sign in', error);
 			updateApiResponse({
 				message: 'An error occurred during sign in',
 				status: 'error',
@@ -96,6 +82,7 @@ export default function SignIn() {
 				type="email"
 				value={email}
 				autoComplete="email"
+				dataTestID="email-input"
 				onChange={(event) => setEmail(event.target.value)}
 			/>
 			<Input
@@ -104,6 +91,7 @@ export default function SignIn() {
 				name="password"
 				type="password"
 				value={password}
+				dataTestID="password-input"
 				autoComplete="current-password"
 				onChange={(event) => setPassword(event.target.value)}
 			/>
