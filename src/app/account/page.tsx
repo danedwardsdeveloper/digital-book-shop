@@ -4,7 +4,8 @@ import clsx from 'clsx';
 
 import { useAuth } from '@/providers/AuthProvider';
 import { ApiResponse, type UserType } from '@/types';
-import OrderTable from '@/components/OrderTable';
+// import OrderTable from '@/components/OrderTable';
+import PurchaseHistory from '@/components/PurchaseHistory';
 import { Button } from '@/components/Buttons';
 import Container from '@/components/Container';
 import { FeedbackMessage } from '@/components/FeedbackMessage';
@@ -112,7 +113,7 @@ export default function Account() {
 				<AccountDetails user={user} />
 			</div>
 			{hasPurchased ? (
-				<OrderTable type={'purchaseHistory'} />
+				<PurchaseHistory />
 			) : (
 				<Container>
 					<h2 className="text-lg font-semibold">No purchases yet</h2>
