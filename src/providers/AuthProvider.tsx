@@ -6,7 +6,7 @@ import {
 	useEffect,
 	ReactNode,
 } from 'react';
-import { type ApiResponse, type UserType } from '@/types';
+import { type ApiResponse } from '@/types';
 
 interface AuthContextType extends Omit<ApiResponse, 'cart'> {
 	signedIn: boolean;
@@ -29,13 +29,13 @@ export async function validateToken() {
 		const data = await response.json();
 		return data;
 	} catch (error) {
+		console.error('Unknown error', error);
 		return null;
 	} finally {
 	}
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-	const [user, setUser] = useState<UserType | null>(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const [apiResponse, setApiResponse] = useState<ApiResponse>({
 		message: null,
@@ -45,11 +45,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 	});
 
 	const updateApiResponse = (newApiResponse: Partial<ApiResponse>) => {
-		setApiResponse((prevState) => {
-			const updatedState = { ...prevState, ...newApiResponse };
-			setUser(updatedState.user);
-			return updatedState;
-		});
+		setApiResponse((prevState) => ({
+			...prevState,
+			...newApiResponse,
+		}));
 	};
 
 	const signOut = async () => {
