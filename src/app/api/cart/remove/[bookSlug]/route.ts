@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import { createCookieOptions } from '@/library/cookies';
 import { User, connectToDatabase } from '@/library/User';
 import type { ApiResponse, ApiStatus, Token, CartItem } from '@/types';
+import { getBookTitle } from '@/library/books';
 
 const jwtSecret = process.env.JWT_SECRET!;
 
@@ -15,6 +16,8 @@ export async function POST(
 ): Promise<NextResponse<ApiResponse>> {
 	const cookieStore = cookies();
 	const token = cookieStore.get('token');
+	const { bookSlug } = params;
+	const bookTitle = getBookTitle(bookSlug);
 
 	if (!token) {
 		return NextResponse.json(
@@ -47,7 +50,6 @@ export async function POST(
 			);
 		}
 
-		const { bookSlug } = params;
 		const cartItemIndex = user.cart.findIndex(
 			(item: CartItem) => item.slug === bookSlug
 		);
@@ -74,7 +76,7 @@ export async function POST(
 
 		const response = NextResponse.json({
 			status: 'success' as ApiStatus,
-			message: 'Book removed from cart',
+			message: `${bookTitle} removed from cart`,
 			signedIn: true,
 			user: user.toObject(),
 		});
@@ -100,7 +102,7 @@ export async function POST(
 		return NextResponse.json(
 			{
 				status: 'error' as ApiStatus,
-				message: 'An error occurred while removing book from cart',
+				message: `An error occurred while removing ${bookTitle} from cart`,
 				signedIn: true,
 				user: null,
 			},
