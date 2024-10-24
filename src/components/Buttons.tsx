@@ -8,18 +8,20 @@ import { useAuth } from '@/providers/AuthProvider';
 import { useCart } from '@/providers/CartProvider';
 import { type ApiResponse } from '@/types';
 
+const focusStyles = 'focus:outline-2 outline-offset-4';
+
 const baseStyles = clsx(
 	'w-full p-2',
 	'rounded',
 	'font-semibold',
 	'transition-colors duration-200'
-	// focus states
 );
 
 const disabledStyles = 'cursor-not-allowed bg-gray-300 hover:bg-gray-300';
 
 const variantMap = {
-	primary: clsx('bg-blue-500 hover:bg-blue-600', 'text-white'),
+	buy: clsx('bg-yellow-400 hover:bg-yellow-500', 'text-black'),
+	primary: clsx('bg-blue-500 hover:bg-blue-600 text-white'),
 	secondary: clsx(
 		'bg-gray-200',
 		'border border-gray-300',
@@ -67,6 +69,7 @@ export function Button({
 			data-testid={dataTestID}
 			className={clsx(
 				baseStyles,
+				focusStyles,
 				variantMap[variant],
 				disabled && disabledStyles,
 				classes
@@ -95,7 +98,7 @@ export function TextButton({
 		<button
 			onClick={onClick}
 			aria-label={ariaLabel}
-			className="bg-none text-gray-500 hover:underline"
+			className={clsx(focusStyles, 'bg-none text-gray-500 hover:underline')}
 			data-testid={dataTestID}
 		>
 			{text}
@@ -172,7 +175,7 @@ export function CartButton({ slug, variant, dataTestID }: CartButtonProps) {
 					: 'Add to cart'
 			}
 			onClick={handleToggleCart}
-			variant={inCart ? 'secondary' : 'primary'}
+			variant={inCart ? 'secondary' : 'buy'}
 			disabled={isLoading}
 			dataTestID={dataTestID}
 		/>
@@ -208,6 +211,7 @@ export function NavButton({
 			href={href}
 			className={clsx(
 				baseStyles,
+				focusStyles,
 				'text-center',
 				variantMap[variant],
 				disabled && disabledStyles,
