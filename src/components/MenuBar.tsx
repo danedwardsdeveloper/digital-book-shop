@@ -1,6 +1,8 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import clsx from 'clsx';
+
 import { useCart } from '@/providers/CartProvider';
 import { useAuth } from '@/providers/AuthProvider';
 
@@ -47,33 +49,35 @@ const menuItems: MenuItem[] = [
 	},
 ];
 
-export default function MenuBar() {
-	const pathname = usePathname();
-	const { signedIn, isLoading } = useAuth();
+function MenuItem({ item }: { item: MenuItem }) {
 	const { cart } = useCart();
-
+	const pathname = usePathname();
 	const activeCartItems = cart.filter((item) => !item.removed).length;
+	const isCart = item.name === 'Cart';
+	const displayName =
+		isCart && activeCartItems > 0 ? `Cart (${activeCartItems})` : item.name;
 
-	const MenuItem = ({ item }: { item: MenuItem }) => {
-		const isCart = item.name === 'Cart';
-		const displayName =
-			isCart && activeCartItems > 0
-				? `Cart (${activeCartItems})`
-				: item.name;
+	return (
+		<Link
+			href={item.href}
+			className={clsx(
+				'hover:underline',
+				'focus:outline-2',
+				'outline-offset-4',
+				pathname === item.href && 'underline',
+				item.className
+			)}
+			data-testid={item.testID}
+		>
+			{displayName}
+		</Link>
+	);
+}
 
-		return (
-			<Link
-				href={item.href}
-				className={`hover:underline ${
-					pathname === item.href ? 'underline' : ''
-				} ${item.className || ''}`}
-				data-testid={item.testID}
-			>
-				{displayName}
-			</Link>
-		);
-	};
+export default function MenuBar() {
+	const { signedIn, isLoading } = useAuth();
 
+	// ToDo: this is chaotic, confusing and doesn't look good!
 	if (isLoading) {
 		const alwaysItems = menuItems.filter(
 			(item) => item.showWhen === 'always'
