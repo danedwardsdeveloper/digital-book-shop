@@ -12,6 +12,7 @@
 	},
 	"dependencies": {
 		"@stripe/stripe-js": "^4.8.0",
+		"@tailwindcss/aspect-ratio": "^0.4.2",
 		"@types/fs-extra": "^11.0.4",
 		"@types/pdfkit": "^0.13.5",
 		"bcryptjs": "^2.4.3",
