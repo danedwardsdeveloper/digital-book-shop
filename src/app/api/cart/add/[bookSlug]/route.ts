@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 import type { ApiResponse, CartItem, Token, UserType } from '@/types';
 import { createCookieOptions } from '@/library/cookies';
 import { User, connectToDatabase } from '@/library/User';
-import { books } from '@/library/books';
+import { books, getBookTitle } from '@/library/books';
 
 const jwtSecret = process.env.JWT_SECRET!;
 
@@ -15,6 +15,7 @@ export async function POST(
 	{ params }: { params: { bookSlug: string } }
 ) {
 	const { bookSlug } = params;
+	const bookTitle = getBookTitle(bookSlug);
 
 	try {
 		await connectToDatabase();
@@ -55,7 +56,7 @@ export async function POST(
 			return NextResponse.json<ApiResponse>(
 				{
 					status: 'error',
-					message: 'Invalid book slug',
+					message: `Invalid book slug: ${bookSlug}`,
 					signedIn: true,
 					user: user.toObject() as UserType,
 				},
@@ -74,7 +75,7 @@ export async function POST(
 			return NextResponse.json<ApiResponse>(
 				{
 					status: 'info',
-					message: 'Book is already in cart',
+					message: `${bookTitle} is already in cart`,
 					signedIn: true,
 					user: user.toObject() as UserType,
 				},
@@ -83,8 +84,7 @@ export async function POST(
 		} else {
 			user.cart.push({ slug: bookSlug, removed: false });
 			await user.save();
-			// ToDo: add the name of the book
-			message = 'Book added to cart';
+			message = `${bookTitle} added to cart`;
 			statusCode = 200;
 		}
 
