@@ -5,6 +5,11 @@ import madameBovaryImage from '@/images/madame-bovary.webp';
 import janeEyreImage from '@/images/jane-eyre.webp';
 import wutheringHeightsImage from '@/images/wuthering-heights.webp';
 
+export function getBookTitle(slug: string): string {
+	const book = books.find((book) => book.slug === slug);
+	return book?.title ?? slug;
+}
+
 export const books: StaticBook[] = [
 	{
 		title: 'Dracula',
