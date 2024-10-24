@@ -3,7 +3,7 @@ import { useState, useMemo } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 
 import Container from '@/components/Container';
-import OrderTable from '@/components/OrderTable';
+import CartSummary from '@/components/CartSummary';
 import { useCart } from '@/providers/CartProvider';
 import { useAuth } from '@/providers/AuthProvider';
 import { FeedbackMessage } from '@/components/FeedbackMessage';
@@ -92,7 +92,7 @@ export default function Cart() {
 
 	return (
 		<div>
-			<OrderTable type={'orderSummary'} />
+			<CartSummary />
 			<Container>
 				<FeedbackMessage />
 				<Button
@@ -100,6 +100,7 @@ export default function Cart() {
 					disabled={isLoading || activeCartItems.length === 0}
 					onClick={handleCheckout}
 					dataTestID={'checkout-button'}
+					variant="buy"
 				/>
 				<NavButton
 					href={'/'}
