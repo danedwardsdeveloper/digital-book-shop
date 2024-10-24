@@ -1,26 +1,31 @@
 'use client';
-import { useMemo, useCallback } from 'react';
-import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import clsx from 'clsx';
-
+import { usePathname } from 'next/navigation';
 import { useCart } from '@/providers/CartProvider';
 import { useAuth } from '@/providers/AuthProvider';
 
-interface MenuItem {
+type MenuItem = {
 	name: string;
 	href: string;
-	showWhen: 'always' | 'signedIn' | 'signedOut' | 'test';
+	showWhen: 'always' | 'signedIn' | 'signedOut';
 	testID: string;
-}
+	className?: string;
+};
 
 const menuItems: MenuItem[] = [
-	{ name: 'Home', href: '/', showWhen: 'always', testID: 'nav-home' },
+	{
+		name: 'Home',
+		href: '/',
+		showWhen: 'always',
+		testID: 'nav-home',
+		className: 'mr-auto',
+	},
 	{
 		name: 'Create account',
 		href: '/create-account',
 		showWhen: 'signedOut',
 		testID: 'nav-create-account',
+		className: 'hidden md:block',
 	},
 	{
 		name: 'Sign in',
@@ -42,84 +47,67 @@ const menuItems: MenuItem[] = [
 	},
 ];
 
-function PlaceholderMenuItem() {
-	return <div className="h-6 w-20 bg-gray-200 animate-pulse rounded"></div>;
-}
-
 export default function MenuBar() {
 	const pathname = usePathname();
 	const { signedIn, isLoading } = useAuth();
 	const { cart } = useCart();
 
-	const activeCartItems = useMemo(() => {
-		return cart.filter((item) => !item.removed).length;
-	}, [cart]);
+	const activeCartItems = cart.filter((item) => !item.removed).length;
 
-	const visibleMenuItems = useMemo(() => {
-		return menuItems.filter(
-			(item) =>
-				item.showWhen === 'always' ||
-				(signedIn && item.showWhen === 'signedIn') ||
-				(!signedIn && item.showWhen === 'signedOut')
-		);
-	}, [signedIn]);
+	const MenuItem = ({ item }: { item: MenuItem }) => {
+		const isCart = item.name === 'Cart';
+		const displayName =
+			isCart && activeCartItems > 0
+				? `Cart (${activeCartItems})`
+				: item.name;
 
-	const formatCartText = useCallback((itemCount: number) => {
-		if (itemCount === 0) {
-			return 'Cart';
-		}
 		return (
-			<>
-				Cart (<span className="px-[2px]">{itemCount}</span>)
-			</>
+			<Link
+				href={item.href}
+				className={`hover:underline ${
+					pathname === item.href ? 'underline' : ''
+				} ${item.className || ''}`}
+				data-testid={item.testID}
+			>
+				{displayName}
+			</Link>
 		);
-	}, []);
-
-	const renderMenuItem = useCallback(
-		(menuItem: MenuItem, index: number) => (
-			<li key={index}>
-				<Link
-					href={menuItem.href}
-					className={clsx(
-						'hover:underline',
-						pathname === menuItem.href && 'underline'
-					)}
-					data-testid={menuItem.testID}
-				>
-					{menuItem.name === 'Cart'
-						? formatCartText(activeCartItems)
-						: menuItem.name}
-				</Link>
-			</li>
-		),
-		[pathname, activeCartItems, formatCartText]
-	);
-
-	const renderMenuItems = () => {
-		if (isLoading) {
-			const alwaysVisibleItems = menuItems.filter(
-				(menuItem) => menuItem.showWhen === 'always'
-			);
-
-			return (
-				<>
-					{renderMenuItem(alwaysVisibleItems[0], 0)} {/* Home */}
-					<PlaceholderMenuItem />
-					<PlaceholderMenuItem />
-					{alwaysVisibleItems.length > 1 &&
-						renderMenuItem(alwaysVisibleItems[1], 1)}{' '}
-					{/* Cart */}
-				</>
-			);
-		}
-		return visibleMenuItems.map(renderMenuItem);
 	};
 
-	return (
-		<div className="sticky top-0 shadow-sm z-10 bg-white bg-opacity-90">
-			<nav className={clsx('max-w-2xl mx-auto p-4')}>
-				<ul className="flex flex-wrap gap-4">{renderMenuItems()}</ul>
+	if (isLoading) {
+		const alwaysItems = menuItems.filter(
+			(item) => item.showWhen === 'always'
+		);
+		return (
+			<nav className="sticky top-0 z-10 shadow-sm bg-white/80 backdrop-blur border-b border-gray-200">
+				<div className="max-w-2xl mx-auto px-4 py-2">
+					<ul className="flex flex-wrap gap-4">
+						<MenuItem item={alwaysItems[0]} />
+						<div className="h-6 w-20 bg-gray-200 animate-pulse rounded" />
+						<div className="h-6 w-20 bg-gray-200 animate-pulse rounded" />
+						{alwaysItems[1] && <MenuItem item={alwaysItems[1]} />}
+					</ul>
+				</div>
 			</nav>
-		</div>
+		);
+	}
+
+	const visibleItems = menuItems.filter(
+		(item) =>
+			item.showWhen === 'always' ||
+			(signedIn && item.showWhen === 'signedIn') ||
+			(!signedIn && item.showWhen === 'signedOut')
+	);
+
+	return (
+		<nav className="sticky top-0 z-10 shadow-sm bg-white/80 backdrop-blur border-b border-gray-200">
+			<div className="max-w-2xl mx-auto px-4 py-2">
+				<ul className="flex flex-wrap gap-4">
+					{visibleItems.map((item, index) => (
+						<MenuItem key={index} item={item} />
+					))}
+				</ul>
+			</div>
+		</nav>
 	);
 }
