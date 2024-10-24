@@ -20,7 +20,7 @@ export function FeedbackMessage() {
 	return (
 		<p
 			data-testid="feedback-message"
-			className={clsx('text-center h-6', getStatusColorClass(status))}
+			className={clsx('text-center h-6 mb-4', getStatusColorClass(status))}
 		>
 			{message}
 		</p>
