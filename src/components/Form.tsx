@@ -7,7 +7,7 @@ interface FormProps {
 
 export function Form({ onSubmit, children }: FormProps) {
 	return (
-		<form onSubmit={onSubmit} className="space-y-4 mt-8 w-2/3 mx-auto">
+		<form onSubmit={onSubmit} className="mt-8 w-2/3 mx-auto space-y-4">
 			{children}
 		</form>
 	);
@@ -69,6 +69,22 @@ export function FormLink({ target, text }: FormLinkProps) {
 				{text}
 			</Link>
 		</p>
+	);
+}
+
+export function CookieNotice({
+	purpose,
+}: {
+	purpose: 'signing in' | 'creating an account';
+}) {
+	return (
+		<div className="mb-8">
+			<p className="text-sm text-gray-500 text-center mb-8">
+				{`This site uses strictly necessary cookies to keep you signed in. By
+			${purpose}, you agree to the use of these
+			cookies. We do not use any cookies for marketing or analytics purposes.`}
+			</p>
+		</div>
 	);
 }
 
