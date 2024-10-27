@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 
 import { createCookieOptions } from '@/library/cookies';
 import { User, connectToDatabase } from '@/library/User';
-import type { ApiResponse, ApiStatus, Token, CartItem } from '@/types';
+import type { AppState, AppMessageStatus, Token, CartItem } from '@/types';
 import { getBookTitle } from '@/library/books';
 
 const jwtSecret = process.env.JWT_SECRET!;
@@ -13,7 +13,7 @@ const jwtSecret = process.env.JWT_SECRET!;
 export async function POST(
 	request: Request,
 	{ params }: { params: { bookSlug: string } }
-): Promise<NextResponse<ApiResponse>> {
+): Promise<NextResponse<AppState>> {
 	const cookieStore = cookies();
 	const token = cookieStore.get('token');
 	const { bookSlug } = params;
@@ -22,7 +22,7 @@ export async function POST(
 	if (!token) {
 		return NextResponse.json(
 			{
-				status: 'error' as ApiStatus,
+				status: 'error' as AppMessageStatus,
 				message: 'Not signed in',
 				signedIn: false,
 				user: null,
@@ -41,7 +41,7 @@ export async function POST(
 		if (!user) {
 			return NextResponse.json(
 				{
-					status: 'error' as ApiStatus,
+					status: 'error' as AppMessageStatus,
 					message: 'User not found',
 					signedIn: false,
 					user: null,
@@ -57,8 +57,8 @@ export async function POST(
 		if (cartItemIndex === -1) {
 			return NextResponse.json(
 				{
-					status: 'info' as ApiStatus,
-					message: 'Book not in cart',
+					status: 'error' as AppMessageStatus,
+					message: `${bookTitle} not in cart`,
 					signedIn: true,
 					user: user.toObject(),
 				},
@@ -75,7 +75,7 @@ export async function POST(
 		const cookieOptions = createCookieOptions(newToken);
 
 		const response = NextResponse.json({
-			status: 'success' as ApiStatus,
+			status: 'info' as AppMessageStatus,
 			message: `${bookTitle} removed from cart`,
 			signedIn: true,
 			user: user.toObject(),
@@ -90,7 +90,7 @@ export async function POST(
 		if (error instanceof jwt.JsonWebTokenError) {
 			return NextResponse.json(
 				{
-					status: 'error' as ApiStatus,
+					status: 'error' as AppMessageStatus,
 					message: 'Invalid session',
 					signedIn: false,
 					user: null,
@@ -101,7 +101,7 @@ export async function POST(
 
 		return NextResponse.json(
 			{
-				status: 'error' as ApiStatus,
+				status: 'error' as AppMessageStatus,
 				message: `An error occurred while removing ${bookTitle} from cart`,
 				signedIn: true,
 				user: null,
