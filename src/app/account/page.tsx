@@ -1,10 +1,10 @@
 'use client';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import clsx from 'clsx';
 
-import { useAuth } from '@/providers/AuthProvider';
-import { ApiResponse, type UserType } from '@/types';
-// import OrderTable from '@/components/OrderTable';
+import { useAuth, validateToken } from '@/providers/AuthProvider';
+import { AppState, type UserType } from '@/types';
 import PurchaseHistory from '@/components/PurchaseHistory';
 import { Button } from '@/components/Buttons';
 import Container from '@/components/Container';
@@ -39,7 +39,26 @@ function AccountDetails({ user }: AccountDetailsProps) {
 
 export default function Account() {
 	const router = useRouter();
-	const { user, updateApiResponse, isLoading, signOut } = useAuth();
+	const { user, updateAppState, isLoading } = useAuth();
+
+	useEffect(() => {
+		async function refreshUserData() {
+			const result = await validateToken();
+			if (result && result.user) {
+				updateAppState({
+					signedIn: true,
+					user: result.user,
+				});
+			} else {
+				updateAppState({
+					signedIn: false,
+					user: null,
+				});
+			}
+		}
+
+		refreshUserData();
+	}, [router]);
 
 	if (isLoading) {
 		return <p>Loading...</p>;
@@ -52,8 +71,35 @@ export default function Account() {
 	const hasPurchased = user.purchased.length;
 
 	async function handleSignOut() {
-		await signOut();
-		router.push('/');
+		try {
+			const response = await fetch('/api/auth/sign-out', {
+				method: 'POST',
+				credentials: 'include',
+			});
+
+			const data: AppState = await response.json();
+
+			localStorage.removeItem('cart');
+
+			updateAppState({
+				message: data.message,
+				status: data.status,
+				signedIn: false,
+				user: null,
+			});
+
+			if (response.ok) {
+				router.replace('/');
+			}
+		} catch (error) {
+			updateAppState({
+				status: 'error',
+				message:
+					error instanceof Error ? error.message : 'Failed to sign out',
+				signedIn: false,
+				user: null,
+			});
+		}
 	}
 
 	function confirmDelete(event: React.MouseEvent<HTMLButtonElement>) {
@@ -61,7 +107,7 @@ export default function Account() {
 		event.stopPropagation();
 
 		const isConfirmed = window.confirm(
-			'Are you sure you want to delete your account?\nAccess to previously purchased books will be lost.'
+			'Are you sure you want to delete your account?\nAccess to purchased books will be lost.'
 		);
 		if (isConfirmed) {
 			handleDelete();
@@ -75,39 +121,30 @@ export default function Account() {
 				credentials: 'include',
 			});
 
-			const data: ApiResponse = await response.json();
+			const data: AppState = await response.json();
+
+			updateAppState(data);
 
 			if (response.ok) {
 				localStorage.removeItem('cart');
-
-				updateApiResponse({
-					message: data.message,
-					status: data.status,
-					signedIn: false,
-					user: null,
-				});
-
 				router.push('/');
-			} else {
-				throw new Error(
-					data.message ||
-						'An error occurred while attempting to delete your account'
-				);
 			}
 		} catch (error) {
-			updateApiResponse({
+			updateAppState({
+				status: 'error',
 				message:
 					error instanceof Error
 						? error.message
 						: 'An error occurred while attempting to delete your account',
-				status: 'error',
-				signedIn: true,
+				signedIn: false,
+				user: null,
 			});
 		}
 	}
 
 	return (
 		<>
+			<FeedbackMessage />
 			<div className="space-y-4 mt-8 mb-12 w-2/3 mx-auto">
 				<h2 className="text-xl font-semibold">Account details</h2>
 				<AccountDetails user={user} />
@@ -124,10 +161,9 @@ export default function Account() {
 					text={'Sign out'}
 					variant={'secondary'}
 					onClick={handleSignOut}
+					dataTestID="sign-out-button"
 				/>
-				<div className="my-4">
-					<FeedbackMessage />
-				</div>
+				<div className="my-4"></div>
 			</div>
 			<div
 				className={clsx(
