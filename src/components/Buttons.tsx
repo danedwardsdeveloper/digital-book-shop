@@ -6,7 +6,8 @@ import clsx from 'clsx';
 
 import { useAuth } from '@/providers/AuthProvider';
 import { useCart } from '@/providers/CartProvider';
-import { type ApiResponse } from '@/types';
+import { type AppState } from '@/types';
+import { getBookTitle } from '@/library/books';
 
 const focusStyles = 'focus:outline-2 outline-offset-4';
 
@@ -17,23 +18,31 @@ const baseStyles = clsx(
 	'transition-colors duration-200'
 );
 
-const disabledStyles = 'cursor-not-allowed bg-gray-300 hover:bg-gray-300';
-
 const variantMap = {
-	buy: clsx('bg-yellow-400 hover:bg-yellow-500', 'text-black'),
-	primary: clsx('bg-blue-500 hover:bg-blue-600 text-white'),
+	buy: clsx(
+		'bg-yellow-400 enabled:hover:bg-yellow-500',
+		'text-black',
+		'disabled:bg-gray-300 disabled:cursor-not-allowed'
+	),
+	primary: clsx(
+		'bg-blue-500 enabled:hover:bg-blue-600',
+		'text-white',
+		'disabled:bg-gray-300 disabled:cursor-not-allowed'
+	),
 	secondary: clsx(
 		'bg-gray-200',
 		'border border-gray-300',
-		'hover:bg-gray-300',
-		'active:bg-gray-400',
-		'text-gray-800 hover:text-gray-900'
+		'enabled:hover:bg-gray-300',
+		'enabled:active:bg-gray-400',
+		'text-gray-800 enabled:hover:text-gray-900',
+		'disabled:bg-gray-300 disabled:cursor-not-allowed'
 	),
 	delete: clsx(
 		'bg-red-400',
-		'hover:bg-red-500',
-		'active:bg-red-600',
-		'text-black'
+		'enabled:hover:bg-red-500',
+		'enabled:active:bg-red-600',
+		'text-black',
+		'disabled:bg-gray-300 disabled:cursor-not-allowed'
 	),
 };
 
@@ -67,13 +76,7 @@ export function Button({
 			disabled={disabled}
 			aria-label={ariaLabel}
 			data-testid={dataTestID}
-			className={clsx(
-				baseStyles,
-				focusStyles,
-				variantMap[variant],
-				disabled && disabledStyles,
-				classes
-			)}
+			className={clsx(baseStyles, focusStyles, variantMap[variant], classes)}
 		>
 			{text}
 		</button>
@@ -98,7 +101,14 @@ export function TextButton({
 		<button
 			onClick={onClick}
 			aria-label={ariaLabel}
-			className={clsx(focusStyles, 'bg-none text-gray-500 hover:underline')}
+			className={clsx(
+				focusStyles,
+				'bg-none',
+				'text-gray-500',
+				'underline underline-offset-2',
+				'decoration-transparent hover:decoration-gray-300',
+				'transition-all duration-300'
+			)}
 			data-testid={dataTestID}
 		>
 			{text}
@@ -115,10 +125,11 @@ interface CartButtonProps {
 export function CartButton({ slug, variant, dataTestID }: CartButtonProps) {
 	const router = useRouter();
 	const { isInCart, toggleCartItem } = useCart();
-	const { updateApiResponse, signedIn } = useAuth();
+	const { updateAppState, signedIn } = useAuth();
 	const [isLoading, setIsLoading] = useState(false);
 
 	const inCart = isInCart(slug);
+	const bookTitle = getBookTitle(slug);
 
 	const handleToggleCart = async () => {
 		setIsLoading(true);
@@ -126,10 +137,21 @@ export function CartButton({ slug, variant, dataTestID }: CartButtonProps) {
 		try {
 			await toggleCartItem(slug);
 
+			const baseState: AppState = {
+				message: inCart
+					? `${bookTitle} removed from cart`
+					: `${bookTitle} added to cart`,
+				status: inCart ? 'info' : 'success',
+				signedIn,
+				user: null,
+			};
+
 			if (signedIn) {
 				const endpoint = inCart
 					? `/api/cart/remove/${slug}`
 					: `/api/cart/add/${slug}`;
+				``;
+
 				const response = await fetch(endpoint, {
 					method: 'POST',
 					headers: {
@@ -137,28 +159,35 @@ export function CartButton({ slug, variant, dataTestID }: CartButtonProps) {
 					},
 				});
 
-				const data: ApiResponse = await response.json();
+				const data: AppState = await response.json();
 
-				if (response.ok && data.status === 'success') {
-					updateApiResponse(data);
+				if (response.ok) {
+					updateAppState(data);
 					if (!inCart) {
 						router.push('/cart');
 					}
 				} else {
 					console.error('Error modifying cart:', data.message);
-					updateApiResponse({
-						status: 'error',
+					updateAppState({
+						status: data.status,
 						message: data.message || 'Failed to modify cart',
+						signedIn,
+						user: null,
 					});
 				}
-			} else if (!inCart) {
-				router.push('/cart');
+			} else {
+				updateAppState(baseState);
+				if (!inCart) {
+					router.push('/cart');
+				}
 			}
 		} catch (error) {
 			console.error('Error modifying cart:', error);
-			updateApiResponse({
+			updateAppState({
 				status: 'error',
 				message: 'An unexpected error occurred',
+				signedIn,
+				user: null,
 			});
 		} finally {
 			setIsLoading(false);
@@ -195,6 +224,7 @@ interface NavButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	variant?: Variants;
 	disabled?: boolean;
 	ariaLabel?: string;
+	dataTestID?: string;
 	classes?: string;
 }
 
@@ -202,8 +232,8 @@ export function NavButton({
 	href,
 	text,
 	variant = 'primary',
-	disabled,
 	ariaLabel,
+	dataTestID,
 	classes,
 }: NavButtonProps) {
 	return (
@@ -214,9 +244,9 @@ export function NavButton({
 				focusStyles,
 				'text-center',
 				variantMap[variant],
-				disabled && disabledStyles,
 				classes
 			)}
+			data-testid={dataTestID}
 			aria-label={ariaLabel}
 		>
 			{text}
