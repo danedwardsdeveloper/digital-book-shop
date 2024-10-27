@@ -19,7 +19,7 @@ const stripePromise = loadStripe(stripePublicKey);
 
 export default function Cart() {
 	const { cart } = useCart();
-	const { updateApiResponse } = useAuth();
+	const { updateAppState } = useAuth();
 	const [isLoading, setIsLoading] = useState(false);
 
 	const activeCartItems = useMemo(() => {
@@ -45,7 +45,7 @@ export default function Cart() {
 			const data: StripeApiResponse = await response.json();
 
 			if (data.status === 'success' && data.sessionId) {
-				updateApiResponse({
+				updateAppState({
 					message: 'Redirecting to secure checkout...',
 					status: 'success',
 				});
@@ -58,21 +58,21 @@ export default function Cart() {
 
 					if (error) {
 						console.error('Stripe redirect error:', error);
-						updateApiResponse({
+						updateAppState({
 							message:
 								'Unable to redirect to checkout. Please try again.',
 							status: 'error',
 						});
 					}
 				} else {
-					updateApiResponse({
+					updateAppState({
 						message:
 							'Unable to initialize payment system. Please try again later.',
 						status: 'error',
 					});
 				}
 			} else {
-				updateApiResponse({
+				updateAppState({
 					message:
 						data.message ||
 						'An unexpected error occurred during checkout.',
@@ -81,7 +81,7 @@ export default function Cart() {
 			}
 		} catch (error) {
 			console.error('Checkout error:', error);
-			updateApiResponse({
+			updateAppState({
 				message: 'An unexpected error occurred. Please try again later.',
 				status: 'error',
 			});
@@ -91,10 +91,10 @@ export default function Cart() {
 	};
 
 	return (
-		<div>
+		<>
+			<FeedbackMessage />
 			<CartSummary />
 			<Container>
-				<FeedbackMessage />
 				<Button
 					text={isLoading ? 'Processing...' : 'Checkout'}
 					disabled={isLoading || activeCartItems.length === 0}
@@ -106,8 +106,9 @@ export default function Cart() {
 					href={'/'}
 					text={'Continue shopping'}
 					variant={'secondary'}
+					dataTestID="continue-shopping-button"
 				/>
 			</Container>
-		</div>
+		</>
 	);
 }
