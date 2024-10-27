@@ -2,15 +2,15 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-import type { ApiResponse } from '@/types';
+import type { AppState } from '@/types';
 import { useAuth } from '@/providers/AuthProvider';
 import { useCart } from '@/providers/CartProvider';
-import { Form, FormLink, Input } from '@/components/Form';
+import { CookieNotice, Form, FormLink, Input } from '@/components/Form';
 import { FeedbackMessage } from '@/components/FeedbackMessage';
 import { Button } from '@/components/Buttons';
 
 export default function CreateAccount() {
-	const { updateApiResponse, signedIn } = useAuth();
+	const { updateAppState, signedIn } = useAuth();
 	const { mergeLocalAndDatabaseCarts } = useCart();
 	const [name, setName] = useState('');
 	const [email, setEmail] = useState('');
@@ -27,7 +27,7 @@ export default function CreateAccount() {
 
 	const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
-		updateApiResponse({ message: '', status: 'info' });
+		updateAppState({ message: '', status: 'info' });
 		setIsLoading(true);
 
 		try {
@@ -39,12 +39,12 @@ export default function CreateAccount() {
 				body: JSON.stringify({ name, email, password }),
 			});
 
-			const data: ApiResponse = await response.json();
+			const data: AppState = await response.json();
 
 			if (response.ok && data.user) {
 				await mergeLocalAndDatabaseCarts(data.user);
 
-				updateApiResponse({
+				updateAppState({
 					message: `Welcome ${data.user.name}! Your account has been created.`,
 					status: data.status,
 					signedIn: true,
@@ -53,7 +53,7 @@ export default function CreateAccount() {
 
 				router.push('/');
 			} else {
-				updateApiResponse({
+				updateAppState({
 					message: data.message || 'An unexpected error occurred',
 					status: data.status || 'error',
 					signedIn: false,
@@ -62,7 +62,7 @@ export default function CreateAccount() {
 			}
 		} catch (error) {
 			console.error('An error occurred during account creation', error);
-			updateApiResponse({
+			updateAppState({
 				message: 'An error occurred during account creation',
 				status: 'error',
 				signedIn: false,
@@ -74,46 +74,50 @@ export default function CreateAccount() {
 	};
 
 	return (
-		<Form onSubmit={handleSubmit}>
-			<Input
-				label="Name"
-				id="name"
-				name="name"
-				type="text"
-				value={name}
-				autoComplete="given-name"
-				dataTestID="name-input"
-				onChange={(event) => setName(event.target.value)}
-			/>
-			<Input
-				label="Email"
-				id="email"
-				name="email"
-				type="email"
-				value={email}
-				autoComplete="email"
-				dataTestID="email-input"
-				onChange={(event) => setEmail(event.target.value)}
-			/>
-			<Input
-				label="Password"
-				id="password"
-				name="password"
-				type="password"
-				value={password}
-				autoComplete="new-password"
-				dataTestID="password-input"
-				onChange={(event) => setPassword(event.target.value)}
-			/>
+		<>
 			<FeedbackMessage />
-			<Button
-				type="submit"
-				text={isLoading ? 'Creating account...' : 'Create account'}
-				variant={isLoading ? 'secondary' : 'primary'}
-				disabled={isLoading}
-				dataTestID="create-account-button"
-			/>
-			<FormLink target={'/sign-in'} text={'Sign in instead'} />
-		</Form>
+
+			<Form onSubmit={handleSubmit}>
+				<Input
+					label="Name"
+					id="name"
+					name="name"
+					type="text"
+					value={name}
+					autoComplete="given-name"
+					dataTestID="name-input"
+					onChange={(event) => setName(event.target.value)}
+				/>
+				<Input
+					label="Email"
+					id="email"
+					name="email"
+					type="email"
+					value={email}
+					autoComplete="email"
+					dataTestID="email-input"
+					onChange={(event) => setEmail(event.target.value)}
+				/>
+				<Input
+					label="Password"
+					id="password"
+					name="password"
+					type="password"
+					value={password}
+					autoComplete="new-password"
+					dataTestID="password-input"
+					onChange={(event) => setPassword(event.target.value)}
+				/>
+				<CookieNotice purpose="creating an account" />
+				<Button
+					type="submit"
+					text={isLoading ? 'Creating account...' : 'Create account'}
+					variant={isLoading ? 'secondary' : 'primary'}
+					disabled={isLoading}
+					dataTestID="create-account-button"
+				/>
+				<FormLink target={'/sign-in'} text={'Sign in instead'} />
+			</Form>
+		</>
 	);
 }
