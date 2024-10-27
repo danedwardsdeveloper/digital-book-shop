@@ -14,6 +14,10 @@ export interface CartItem {
 	removed?: boolean;
 }
 
+export interface MongoCartItem extends CartItem {
+	_id?: string;
+}
+
 export interface PurchasedItem extends CartItem {
 	downloads: number;
 }
@@ -26,11 +30,11 @@ export interface UserType {
 	purchased: PurchasedItem[];
 }
 
-export type ApiStatus = 'success' | 'info' | 'warning' | 'error';
+export type AppMessageStatus = 'success' | 'info' | 'warning' | 'error';
 
-export interface ApiResponse {
+export interface AppState {
 	message: string | null;
-	status: ApiStatus;
+	status: AppMessageStatus;
 	signedIn: boolean;
 	user: UserType | null;
 }
