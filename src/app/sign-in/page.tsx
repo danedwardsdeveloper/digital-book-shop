@@ -4,16 +4,22 @@ import { useRouter } from 'next/navigation';
 
 import { useCart } from '@/providers/CartProvider';
 import { useAuth } from '@/providers/AuthProvider';
-import { type ApiResponse } from '@/types';
-import { Form, FormLink, FormSpacer, Input } from '@/components/Form';
+import { type AppState } from '@/types';
+import {
+	CookieNotice,
+	Form,
+	FormLink,
+	FormSpacer,
+	Input,
+} from '@/components/Form';
 import { FeedbackMessage } from '@/components/FeedbackMessage';
 import { Button } from '@/components/Buttons';
 
 export default function SignIn() {
-	const { updateApiResponse, signedIn } = useAuth();
+	const { updateAppState, signedIn } = useAuth();
 	const { mergeLocalAndDatabaseCarts } = useCart();
-	const [email, setEmail] = useState('dan@gmail.com');
-	const [password, setPassword] = useState('securePassword');
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
 
 	const router = useRouter();
@@ -26,7 +32,7 @@ export default function SignIn() {
 
 	async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault();
-		updateApiResponse({ message: '', status: 'info' });
+		updateAppState({ message: '', status: 'info' });
 		setIsLoading(true);
 
 		try {
@@ -38,12 +44,12 @@ export default function SignIn() {
 				body: JSON.stringify({ email, password }),
 			});
 
-			const data: ApiResponse = await response.json();
+			const data: AppState = await response.json();
 
 			if (response.ok && data.user) {
 				await mergeLocalAndDatabaseCarts(data.user);
 
-				updateApiResponse({
+				updateAppState({
 					message: `Welcome back, ${data.user.name}!`,
 					status: data.status,
 					signedIn: true,
@@ -52,7 +58,7 @@ export default function SignIn() {
 
 				router.push('/');
 			} else {
-				updateApiResponse({
+				updateAppState({
 					message: data.message || 'An unexpected error occurred',
 					status: data.status || 'error',
 					signedIn: false,
@@ -61,7 +67,7 @@ export default function SignIn() {
 			}
 		} catch (error) {
 			console.error('An error occurred during sign in', error);
-			updateApiResponse({
+			updateAppState({
 				message: 'An error occurred during sign in',
 				status: 'error',
 				signedIn: false,
@@ -73,36 +79,40 @@ export default function SignIn() {
 	}
 
 	return (
-		<Form onSubmit={handleSubmit}>
-			<FormSpacer />
-			<Input
-				label="Email"
-				id="email"
-				name="email"
-				type="email"
-				value={email}
-				autoComplete="email"
-				dataTestID="email-input"
-				onChange={(event) => setEmail(event.target.value)}
-			/>
-			<Input
-				label="Password"
-				id="password"
-				name="password"
-				type="password"
-				value={password}
-				dataTestID="password-input"
-				autoComplete="current-password"
-				onChange={(event) => setPassword(event.target.value)}
-			/>
+		<>
 			<FeedbackMessage />
-			<Button
-				type="submit"
-				text={isLoading ? 'Signing in...' : 'Sign in'}
-				variant={isLoading ? 'secondary' : 'primary'}
-				disabled={isLoading}
-			/>
-			<FormLink target="/create-account" text="Create account instead" />
-		</Form>
+			<Form onSubmit={handleSubmit}>
+				<FormSpacer />
+				<Input
+					label="Email"
+					id="email"
+					name="email"
+					type="email"
+					value={email}
+					autoComplete="email"
+					dataTestID="email-input"
+					onChange={(event) => setEmail(event.target.value)}
+				/>
+				<Input
+					label="Password"
+					id="password"
+					name="password"
+					type="password"
+					value={password}
+					dataTestID="password-input"
+					autoComplete="current-password"
+					onChange={(event) => setPassword(event.target.value)}
+				/>
+				<CookieNotice purpose="signing in" />
+				<Button
+					type="submit"
+					dataTestID="sign-in-button"
+					text={isLoading ? 'Signing in...' : 'Sign in'}
+					variant={isLoading ? 'secondary' : 'primary'}
+					disabled={isLoading}
+				/>
+				<FormLink target="/create-account" text="Create account instead" />
+			</Form>
+		</>
 	);
 }
