@@ -29,7 +29,7 @@ export default function CartSummary() {
 
 	return (
 		<>
-			<div className="w-2/3 mx-auto mt-8 mb-2 pb-2">
+			<div className="w-2/3 mx-auto mb-2 pb-2">
 				<h2 className="text-lg font-semibold">{`Cart`}</h2>
 			</div>
 			<table className="w-2/3 mx-auto">
