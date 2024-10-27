@@ -6,7 +6,7 @@ import {
 	useEffect,
 	ReactNode,
 } from 'react';
-import { type CartItem, type UserType } from '@/types';
+import { MongoCartItem, type CartItem, type UserType } from '@/types';
 
 interface CartContextType {
 	cart: CartItem[];
@@ -27,12 +27,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
 	useEffect(() => {
 		const storedCart = localStorage.getItem('cart');
 		if (storedCart) {
-			setCart(JSON.parse(storedCart));
+			const parsedCart = JSON.parse(storedCart);
+			setCart(parsedCart.map(cleanCartItem));
 		}
 	}, []);
 
+	const cleanCartItem = (item: MongoCartItem): CartItem => {
+		return {
+			slug: item.slug,
+			removed: item.removed ?? false,
+		};
+	};
+
 	const updateLocalStorage = (newCart: CartItem[]) => {
-		localStorage.setItem('cart', JSON.stringify(newCart));
+		const cleanCart = newCart.map(cleanCartItem);
+		localStorage.setItem('cart', JSON.stringify(cleanCart));
 	};
 
 	const clearCart = () => {
@@ -91,32 +100,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
 	const mergeLocalAndDatabaseCarts = async (user: UserType) => {
 		const localCart = getCart();
-		const mergedCart = [...user.cart];
+		const databaseCart = user.cart.map(cleanCartItem);
+		const mergedCart = [...databaseCart];
 
 		for (const localItem of localCart) {
 			if (!mergedCart.some((item) => item.slug === localItem.slug)) {
-				mergedCart.push(localItem);
+				mergedCart.push(cleanCartItem(localItem));
 			}
 		}
 
 		setCart(mergedCart);
 		updateLocalStorage(mergedCart);
-
-		try {
-			const response = await fetch('/api/user/sync-cart', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ cart: mergedCart }),
-			});
-
-			if (!response.ok) {
-				console.error('Failed to sync cart with backend');
-			}
-		} catch (error) {
-			console.error('Error syncing cart with backend:', error);
-		}
 	};
 
 	const contextValue: CartContextType = {
