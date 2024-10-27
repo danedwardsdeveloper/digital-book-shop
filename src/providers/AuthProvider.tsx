@@ -6,12 +6,12 @@ import {
 	useEffect,
 	ReactNode,
 } from 'react';
-import { type ApiResponse } from '@/types';
+import { type AppState } from '@/types';
 
-interface AuthContextType extends Omit<ApiResponse, 'cart'> {
+interface AuthContextType extends Omit<AppState, 'cart'> {
 	signedIn: boolean;
 	isLoading: boolean;
-	updateApiResponse: (newApiResponse: Partial<ApiResponse>) => void;
+	updateAppState: (newApiResponse: Partial<AppState>) => void;
 	signOut: () => Promise<void>;
 }
 
@@ -37,15 +37,15 @@ export async function validateToken() {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
 	const [isLoading, setIsLoading] = useState(true);
-	const [apiResponse, setApiResponse] = useState<ApiResponse>({
+	const [appState, setAppState] = useState<AppState>({
 		message: null,
 		status: 'info',
 		signedIn: false,
 		user: null,
 	});
 
-	const updateApiResponse = (newApiResponse: Partial<ApiResponse>) => {
-		setApiResponse((prevState) => ({
+	const updateAppState = (newApiResponse: Partial<AppState>) => {
+		setAppState((prevState) => ({
 			...prevState,
 			...newApiResponse,
 		}));
@@ -58,7 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 				credentials: 'include',
 			});
 			const data = await response.json();
-			updateApiResponse({
+			updateAppState({
 				message: data.message,
 				status: data.status,
 				signedIn: false,
@@ -67,11 +67,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			localStorage.removeItem('cart');
 		} catch (error) {
 			console.error('Sign-out error:', error);
-			updateApiResponse({
+			updateAppState({
 				message: 'An error occurred during sign-out',
 				status: 'error',
-				signedIn: apiResponse.signedIn,
-				user: apiResponse.user,
+				signedIn: appState.signedIn,
+				user: appState.user,
 			});
 		}
 	};
@@ -80,12 +80,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		async function initializeAuth() {
 			const result = await validateToken();
 			if (result && result.user) {
-				updateApiResponse({
+				updateAppState({
 					signedIn: true,
 					user: result.user,
 				});
 			} else {
-				updateApiResponse({
+				updateAppState({
 					signedIn: false,
 					user: null,
 				});
@@ -97,8 +97,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 	}, []);
 
 	const contextValue: AuthContextType = {
-		...apiResponse,
-		updateApiResponse,
+		...appState,
+		updateAppState,
 		isLoading,
 		signOut,
 	};
