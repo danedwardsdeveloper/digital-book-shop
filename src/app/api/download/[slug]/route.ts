@@ -1,4 +1,3 @@
-import { NextApiResponse } from 'next';
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
@@ -21,8 +20,8 @@ async function getBookFile(slug: string): Promise<Buffer> {
 }
 
 export async function GET(
-	res: NextApiResponse,
-	context: { params: { slug: string } }
+	request: Request,
+	{ params }: { params: { slug: string } }
 ) {
 	try {
 		await connectToDatabase();
@@ -49,7 +48,7 @@ export async function GET(
 				);
 			}
 
-			const { slug } = context.params;
+			const { slug } = params;
 			if (typeof slug !== 'string') {
 				return NextResponse.json(
 					{ error: 'Invalid slug' },
@@ -60,8 +59,12 @@ export async function GET(
 			const purchasedItem = user.purchased.find(
 				(item: PurchasedItem) => item.slug === slug
 			);
+
 			if (!purchasedItem || purchasedItem.downloads <= 0) {
-				return res.status(403).json({ error: 'No downloads remaining' });
+				return NextResponse.json(
+					{ error: 'No downloads remaining' },
+					{ status: 403 }
+				);
 			}
 
 			const fileBuffer = await getBookFile(slug);
