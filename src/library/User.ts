@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { connect, Schema, Document } from 'mongoose';
 
 interface IUser extends Document {
 	name: string;
@@ -27,8 +27,6 @@ const UserSchema: Schema = new Schema({
 
 export const User =
 	mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
-
-import { connect } from 'mongoose';
 
 export async function connectToDatabase() {
 	if (mongoose.connection.readyState >= 1) {
