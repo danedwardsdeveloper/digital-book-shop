@@ -27,7 +27,7 @@ const menuItems: MenuItem[] = [
 		href: '/create-account',
 		showWhen: 'signedOut',
 		testID: 'nav-create-account',
-		className: 'hidden md:block',
+		className: 'hidden sm:block',
 	},
 	{
 		name: 'Sign in',
@@ -61,10 +61,12 @@ function MenuItem({ item }: { item: MenuItem }) {
 		<Link
 			href={item.href}
 			className={clsx(
-				'hover:underline',
+				'underline underline-offset-4 decoration-2',
+				'decoration-transparent hover:decoration-black',
+				'transition-all duration-300',
 				'focus:outline-2',
 				'outline-offset-4',
-				pathname === item.href && 'underline',
+				pathname === item.href && 'decoration-black',
 				item.className
 			)}
 			data-testid={item.testID}
