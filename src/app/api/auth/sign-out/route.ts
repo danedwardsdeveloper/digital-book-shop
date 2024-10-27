@@ -5,22 +5,31 @@ import jwt from 'jsonwebtoken';
 
 import { createCookieOptions } from '@/library/cookies';
 import { User, connectToDatabase } from '@/library/User';
-import type { ApiResponse, ApiStatus, Token } from '@/types';
+import type { AppState, AppMessageStatus, Token } from '@/types';
 
-export async function POST(): Promise<NextResponse<ApiResponse>> {
+export async function POST(): Promise<NextResponse<AppState>> {
 	const cookieStore = cookies();
 	const token = cookieStore.get('token');
 
+	const createSignOutResponse = (responseData: AppState, status = 200) => {
+		const response = NextResponse.json(responseData, { status });
+
+		response.cookies.set('token', '', {
+			...createCookieOptions(''),
+			maxAge: 0,
+			expires: new Date(0),
+		});
+
+		return response;
+	};
+
 	if (!token) {
-		return NextResponse.json(
-			{
-				status: 'error' as ApiStatus,
-				message: 'Not signed in',
-				signedIn: false,
-				user: null,
-			},
-			{ status: 401 }
-		);
+		return createSignOutResponse({
+			status: 'warning' as AppMessageStatus,
+			message: 'Already signed out',
+			signedIn: false,
+			user: null,
+		});
 	}
 
 	try {
@@ -30,51 +39,35 @@ export async function POST(): Promise<NextResponse<ApiResponse>> {
 		) as Token;
 
 		await connectToDatabase();
-
 		const user = await User.findById(decodedToken.sub);
-		const email = user ? user.email : 'Unknown user';
+		const email = user?.email ?? 'Unknown user';
 
-		const response = NextResponse.json({
-			status: 'success' as ApiStatus,
+		return createSignOutResponse({
+			status: 'success' as AppMessageStatus,
 			message: `${email} signed out successfully`,
 			signedIn: false,
 			user: null,
 		});
-
-		const clearCookieOptions = createCookieOptions('');
-		clearCookieOptions.maxAge = 0;
-		response.cookies.set(clearCookieOptions);
-
-		return response;
 	} catch (error) {
 		console.error('Sign-out error:', error);
 
 		if (error instanceof jwt.JsonWebTokenError) {
-			const response = NextResponse.json(
-				{
-					status: 'warning' as ApiStatus,
-					message: 'Invalid session cleared',
-					signedIn: false,
-					user: null,
-				},
-				{ status: 200 }
-			);
-
-			const clearCookieOptions = createCookieOptions('');
-			clearCookieOptions.maxAge = 0;
-			response.cookies.set(clearCookieOptions);
-
-			return response;
+			return createSignOutResponse({
+				status: 'warning' as AppMessageStatus,
+				message: 'Invalid session cleared',
+				signedIn: false,
+				user: null,
+			});
 		}
 
-		return NextResponse.json(
+		return createSignOutResponse(
 			{
-				status: 'error' as ApiStatus,
+				status: 'error' as AppMessageStatus,
 				message: 'An error occurred during sign-out',
-				signedIn: true,
+				signedIn: false,
 				user: null,
 			},
-			{ status: 500 }
+			500
 		);
 	}
 }
