@@ -3,13 +3,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
-import type {
-	ApiResponse,
-	Token,
-	UserType,
-	StaticBook,
-	CartItem,
-} from '@/types';
+import type { AppState, Token, UserType, StaticBook, CartItem } from '@/types';
 import { User, connectToDatabase } from '@/library/User';
 import { books } from '@/library/books';
 
@@ -21,7 +15,7 @@ export async function GET() {
 		const token = cookieStore.get('token');
 
 		if (!token) {
-			return NextResponse.json<ApiResponse>({
+			return NextResponse.json<AppState>({
 				status: 'error',
 				message: 'Not authenticated',
 				signedIn: false,
@@ -35,7 +29,7 @@ export async function GET() {
 			decoded = jwt.verify(token.value, process.env.JWT_SECRET!) as Token;
 		} catch (error) {
 			console.error('Invalid token', error);
-			return NextResponse.json<ApiResponse>({
+			return NextResponse.json<AppState>({
 				status: 'error',
 				message: 'Invalid token',
 				signedIn: false,
@@ -46,7 +40,7 @@ export async function GET() {
 		const user = await User.findById(decoded.sub);
 
 		if (!user) {
-			return NextResponse.json<ApiResponse>({
+			return NextResponse.json<AppState>({
 				status: 'error',
 				message: 'User not found',
 				signedIn: false,
@@ -67,7 +61,7 @@ export async function GET() {
 			purchased: user.purchased,
 		};
 
-		return NextResponse.json<ApiResponse>({
+		return NextResponse.json<AppState>({
 			status: 'success',
 			message: null,
 			signedIn: true,
@@ -75,7 +69,7 @@ export async function GET() {
 		});
 	} catch (error) {
 		console.error('Error in cart route:', error);
-		return NextResponse.json<ApiResponse>({
+		return NextResponse.json<AppState>({
 			status: 'error',
 			message: 'An error occurred',
 			signedIn: false,
