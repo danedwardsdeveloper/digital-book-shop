@@ -4,10 +4,10 @@ import { useMemo } from 'react';
 import { useAuth } from '@/providers/AuthProvider';
 import { books } from '@/library/books';
 import { TextButton } from './Buttons';
-import { PurchasedItem } from '@/types';
+import { PurchasedItem, AppState } from '@/types';
 
 export default function PurchaseHistory() {
-	const { user } = useAuth();
+	const { user, updateAppState } = useAuth();
 
 	const purchasedBooks = useMemo(() => {
 		if (!user) return [];
@@ -43,11 +43,36 @@ export default function PurchaseHistory() {
 					document.body.appendChild(a);
 					a.click();
 					window.URL.revokeObjectURL(url);
+
+					if (user) {
+						const updatedPurchased = user.purchased.map((item) =>
+							item.slug === slug
+								? { ...item, downloads: (item.downloads || 0) - 1 }
+								: item
+						);
+
+						updateAppState({
+							user: {
+								...user,
+								purchased: updatedPurchased,
+							},
+						});
+					}
 				} else {
-					console.error('Download failed');
+					const errorData: AppState = await response.json();
+					console.error('Download failed:', errorData.message);
+					updateAppState({
+						status: 'error',
+						message: errorData.message || 'Download failed',
+					});
 				}
 			} catch (error) {
 				console.error('Download error:', error);
+				updateAppState({
+					status: 'error',
+					message:
+						error instanceof Error ? error.message : 'Download failed',
+				});
 			}
 		};
 
@@ -68,7 +93,9 @@ export default function PurchaseHistory() {
 							scope="col"
 							className="pb-2 text-right text-sm font-normal text-gray-500"
 						>
-							Downloads remaining
+							downloads
+							<br />
+							remaining
 						</th>
 						<th scope="col" className="pb-2" />
 					</tr>
