@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import Stripe from 'stripe';
 
 import { dynamicBaseURL } from '@/library/environment';
-import type { ApiStatus, CartItem, Token } from '@/types';
+import type { AppMessageStatus, CartItem, Token } from '@/types';
 import { User, connectToDatabase } from '@/library/User';
 import { books } from '@/library/books';
 
@@ -39,7 +39,7 @@ export async function POST() {
 		const user = await User.findById(userId);
 		if (!user) {
 			return NextResponse.json(
-				{ status: 'error' as ApiStatus, message: 'User not found' },
+				{ status: 'error' as AppMessageStatus, message: 'User not found' },
 				{ status: 404 }
 			);
 		}
@@ -50,7 +50,10 @@ export async function POST() {
 
 		if (activeCartItems.length === 0) {
 			return NextResponse.json(
-				{ status: 'error' as ApiStatus, message: 'Your cart is empty' },
+				{
+					status: 'error' as AppMessageStatus,
+					message: 'Your cart is empty',
+				},
 				{ status: 400 }
 			);
 		}
@@ -77,7 +80,10 @@ export async function POST() {
 
 		if (lineItems.length === 0) {
 			return NextResponse.json(
-				{ status: 'error' as ApiStatus, message: 'No valid items in cart' },
+				{
+					status: 'error' as AppMessageStatus,
+					message: 'No valid items in cart',
+				},
 				{ status: 400 }
 			);
 		}
@@ -86,7 +92,7 @@ export async function POST() {
 			payment_method_types: ['card'],
 			line_items: lineItems,
 			mode: 'payment',
-			success_url: `${dynamicBaseURL}/account`,
+			success_url: `${dynamicBaseURL}/thank-you`,
 			cancel_url: `${dynamicBaseURL}/`,
 			client_reference_id: userId,
 		});
@@ -96,7 +102,7 @@ export async function POST() {
 		console.error('Checkout error:', error);
 		return NextResponse.json(
 			{
-				status: 'error' as ApiStatus,
+				status: 'error' as AppMessageStatus,
 				message: 'An error occurred during checkout',
 			},
 			{ status: 500 }
