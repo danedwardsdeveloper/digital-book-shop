@@ -1,9 +1,8 @@
 import Stripe from 'stripe';
 import { NextRequest, NextResponse } from 'next/server';
 
-import { connectToDatabase, User } from '@/library/User';
-
 import { type CartItem } from '@/types';
+import { connectToDatabase, User } from '@/library/User';
 
 const useRealMoney = process.env.NEXT_PUBLIC_USE_REAL_MONEY === 'true';
 
@@ -83,6 +82,4 @@ async function handleCheckoutSessionCompleted(
 		$push: { purchased: { $each: purchasedItems } },
 		$set: { cart: [] },
 	});
-
-	console.log(`Updated purchases for user: ${userId}`);
 }
