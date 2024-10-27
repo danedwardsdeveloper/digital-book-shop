@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
-import type { ApiResponse, CartItem, Token, UserType } from '@/types';
+import type { AppState, CartItem, Token, UserType } from '@/types';
 import { createCookieOptions } from '@/library/cookies';
 import { User, connectToDatabase } from '@/library/User';
 import { books, getBookTitle } from '@/library/books';
@@ -23,7 +23,7 @@ export async function POST(
 		const token = cookies().get('token')?.value;
 
 		if (!token) {
-			return NextResponse.json<ApiResponse>(
+			return NextResponse.json<AppState>(
 				{
 					status: 'error',
 					message: 'Not authenticated',
@@ -40,7 +40,7 @@ export async function POST(
 		const user = await User.findById(userId);
 
 		if (!user) {
-			return NextResponse.json<ApiResponse>(
+			return NextResponse.json<AppState>(
 				{
 					status: 'error',
 					message: 'User not found',
@@ -53,7 +53,7 @@ export async function POST(
 
 		const validBook = books.find((book) => book.slug === bookSlug);
 		if (!validBook) {
-			return NextResponse.json<ApiResponse>(
+			return NextResponse.json<AppState>(
 				{
 					status: 'error',
 					message: `Invalid book slug: ${bookSlug}`,
@@ -72,7 +72,7 @@ export async function POST(
 		);
 
 		if (existingCartItem) {
-			return NextResponse.json<ApiResponse>(
+			return NextResponse.json<AppState>(
 				{
 					status: 'info',
 					message: `${bookTitle} is already in cart`,
@@ -93,7 +93,7 @@ export async function POST(
 		});
 		const cookieOptions = createCookieOptions(newToken);
 
-		const response = NextResponse.json<ApiResponse>(
+		const response = NextResponse.json<AppState>(
 			{
 				status: 'success',
 				message,
@@ -108,7 +108,7 @@ export async function POST(
 		return response;
 	} catch (error) {
 		console.error('Error in cart operation:', error);
-		return NextResponse.json<ApiResponse>(
+		return NextResponse.json<AppState>(
 			{
 				status: 'error',
 				message: 'Internal server error',
