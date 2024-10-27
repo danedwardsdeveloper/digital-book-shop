@@ -3,10 +3,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 
 import { isProduction } from '@/library/environment';
-import { type Token } from '@/types';
+import type { Token, AppState, AppMessageStatus } from '@/types';
 import { connectToDatabase, User } from '@/library/User';
 
-export async function DELETE(request: NextRequest) {
+export async function DELETE(
+	request: NextRequest
+): Promise<NextResponse<AppState>> {
 	try {
 		await connectToDatabase();
 
@@ -14,7 +16,12 @@ export async function DELETE(request: NextRequest) {
 
 		if (!tokenCookie || !tokenCookie.value) {
 			return NextResponse.json(
-				{ error: 'Authentication required' },
+				{
+					status: 'error',
+					message: 'Authentication required',
+					signedIn: false,
+					user: null,
+				},
 				{ status: 401 }
 			);
 		}
@@ -26,20 +33,38 @@ export async function DELETE(request: NextRequest) {
 			decodedToken = jwt.verify(token, process.env.JWT_SECRET!) as Token;
 		} catch (error) {
 			console.error('JWT verification failed:', error);
-			return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+			return NextResponse.json(
+				{
+					status: 'error',
+					message: 'Invalid token',
+					signedIn: false,
+					user: null,
+				},
+				{ status: 401 }
+			);
 		}
 
 		const user = await User.findById(decodedToken.sub);
 
 		if (!user) {
-			return NextResponse.json({ error: 'User not found' }, { status: 404 });
+			return NextResponse.json(
+				{
+					status: 'error',
+					message: 'User not found',
+					signedIn: false,
+					user: null,
+				},
+				{ status: 404 }
+			);
 		}
 
 		await User.findByIdAndDelete(user._id);
 
 		const response = NextResponse.json({
+			status: 'success' as AppMessageStatus,
 			message: 'Account deleted successfully',
-			status: 'success',
+			signedIn: false,
+			user: null,
 		});
 
 		response.cookies.set('token', '', {
@@ -54,7 +79,12 @@ export async function DELETE(request: NextRequest) {
 	} catch (error) {
 		console.error('Delete account error:', error);
 		return NextResponse.json(
-			{ error: 'Internal server error' },
+			{
+				status: 'error',
+				message: 'An unexpected error occurred',
+				signedIn: false,
+				user: null,
+			},
 			{ status: 500 }
 		);
 	}
