@@ -4,6 +4,7 @@ import clsx from 'clsx';
 
 import { books } from '@/library/books';
 import { CartButton } from '@/components/Buttons';
+import { FeedbackMessage } from '@/components/FeedbackMessage';
 
 export default function BookPage({ params }: { params: { slug: string } }) {
 	const book = books.find((book) => book.slug === params.slug);
@@ -13,9 +14,10 @@ export default function BookPage({ params }: { params: { slug: string } }) {
 	}
 
 	return (
-		<div className="container mx-auto px-4 py-8 space-y-12">
-			<div className="flex flex-col md:flex-row md:space-x-8">
-				<div className="w-full md:w-1/2 md:mb-0">
+		<div className="container mx-auto px-4">
+			<FeedbackMessage />
+			<div className="flex flex-col sm:flex-row sm:space-x-8 mb-8">
+				<div className="w-full sm:w-1/2 sm:mb-0">
 					<div>
 						<Image
 							priority
@@ -27,16 +29,16 @@ export default function BookPage({ params }: { params: { slug: string } }) {
 				</div>
 				<div
 					className={clsx(
-						'w-full md:w-1/2 space-y-4',
-						'mt-8 md:mt-0',
+						'w-full sm:w-1/2 space-y-4',
+						'mt-8 sm:mt-0',
 						'flex flex-col justify-between'
 					)}
 				>
-					<div className={clsx('space-y-1', 'mb-10 md:mb-0')}>
+					<div className={clsx('space-y-1', 'mb-10 sm:mb-0')}>
 						<h1
 							className={clsx(
 								'text-3xl font-bold',
-								'text-left md:text-right'
+								'text-left sm:text-right'
 							)}
 						>
 							{book.title}
@@ -44,7 +46,7 @@ export default function BookPage({ params }: { params: { slug: string } }) {
 						<p
 							className={clsx(
 								'text-xl text-gray-600',
-								'text-left md:text-right'
+								'text-left sm:text-right'
 							)}
 						>
 							{book.author}
@@ -54,7 +56,7 @@ export default function BookPage({ params }: { params: { slug: string } }) {
 						<p
 							className={clsx(
 								'font-semibold text-lg',
-								'text-left md:text-right'
+								'text-left sm:text-right'
 							)}
 						>
 							£{book.price.toFixed(2)}
