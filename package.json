@@ -7,8 +7,8 @@
 		"build": "next build",
 		"start": "next start",
 		"lint": "next lint",
-		"test": "vitest --reporter=verbose",
-		"stripe-listen": "stripe listen --forward-to localhost:3000/api/webhook"
+		"test": "vitest",
+		"stripe": "stripe listen --forward-to localhost:3000/api/webhook"
 	},
 	"dependencies": {
 		"@stripe/stripe-js": "^4.8.0",
@@ -33,7 +33,6 @@
 		"@types/bcryptjs": "^2.4.6",
 		"@types/jsonwebtoken": "^9.0.7",
 		"@types/node": "^20",
-		"@types/puppeteer": "^7.0.4",
 		"@types/react": "^18",
 		"@types/react-dom": "^18",
 		"eslint": "^8.57.1",
