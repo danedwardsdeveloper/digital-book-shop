@@ -5,7 +5,13 @@ import { useRouter } from 'next/navigation';
 import type { AppState } from '@/types';
 import { useAuth } from '@/providers/AuthProvider';
 import { useCart } from '@/providers/CartProvider';
-import { CookieNotice, Form, FormLink, Input } from '@/components/Form';
+import {
+	CookieNotice,
+	Form,
+	FormLink,
+	Input,
+	PasswordInput,
+} from '@/components/Form';
 import { FeedbackMessage } from '@/components/FeedbackMessage';
 import { Button } from '@/components/Buttons';
 
@@ -98,11 +104,10 @@ export default function CreateAccount() {
 					dataTestID="email-input"
 					onChange={(event) => setEmail(event.target.value)}
 				/>
-				<Input
+				<PasswordInput
 					label="Password"
 					id="password"
 					name="password"
-					type="password"
 					value={password}
 					autoComplete="new-password"
 					dataTestID="password-input"
