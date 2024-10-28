@@ -14,9 +14,7 @@ const stripe = new Stripe(stripeSecretKey, {
 	apiVersion: '2024-09-30.acacia',
 });
 
-const endpointSecret = useRealMoney
-	? process.env.STRIPE_WEBHOOK_SECRET!
-	: process.env.STRIPE_TEST_WEBHOOK_SECRET!;
+const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
 export async function POST(req: NextRequest) {
 	try {
