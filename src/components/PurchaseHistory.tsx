@@ -82,24 +82,8 @@ export default function PurchaseHistory() {
 
 	return (
 		<>
-			<div className="w-2/3 mx-auto mt-8 mb-2 pb-2">
-				<h2 className="text-lg font-semibold">Purchase history</h2>
-			</div>
-			<table className="w-2/3 mx-auto">
-				<thead className="border-b border-gray-300 pb-4">
-					<tr>
-						<th scope="col" className="pb-2" />
-						<th
-							scope="col"
-							className="pb-2 text-right text-sm font-normal text-gray-500"
-						>
-							downloads
-							<br />
-							remaining
-						</th>
-						<th scope="col" className="pb-2" />
-					</tr>
-				</thead>
+			<h2 className="text-lg font-semibold">Purchase history</h2>
+			<table>
 				<tbody>
 					{purchasedBooks.map((book) => {
 						const purchasedItem = user.purchased.find(
@@ -110,22 +94,22 @@ export default function PurchaseHistory() {
 							: 0;
 
 						return (
-							<tr key={book.slug}>
-								<td className="py-3 pr-4 w-2/5">
+							<tr key={book.slug} className="mb-4 md:mb-2">
+								<td className="py-3 pr-4 w-7/12">
 									<span className="text-base">{book.title}</span>
 									<br />
 									<span className="text-sm text-gray-600">
 										{book.author}
 									</span>
 								</td>
-								<td className="py-3 w-2/5 text-right">
+								<td className="py-3 w-3/12 text-right align-bottom">
 									<span
 										data-testid={`${book.slug}-downloads-remaining`}
 									>
 										{purchasedItem?.downloads ?? 0}
 									</span>
 								</td>
-								<td className="py-3 pl-4 w-1/5 text-right">
+								<td className="py-3 pl-4 w-2/12 text-right align-bottom">
 									<TextButton
 										text={'Download'}
 										dataTestID={`${book.slug}-download-button`}
@@ -137,6 +121,20 @@ export default function PurchaseHistory() {
 						);
 					})}
 				</tbody>
+				<tfoot className="border-t border-gray-300">
+					<tr>
+						<th scope="col" className="pb-2" />
+						<th
+							scope="col"
+							className="pt-2 text-right text-sm font-normal text-gray-500"
+						>
+							downloads
+							<br />
+							remaining
+						</th>
+						<th scope="col" className="pb-2" />
+					</tr>
+				</tfoot>
 			</table>
 		</>
 	);
