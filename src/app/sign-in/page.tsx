@@ -11,6 +11,7 @@ import {
 	FormLink,
 	FormSpacer,
 	Input,
+	PasswordInput,
 } from '@/components/Form';
 import { FeedbackMessage } from '@/components/FeedbackMessage';
 import { Button } from '@/components/Buttons';
@@ -93,11 +94,20 @@ export default function SignIn() {
 					dataTestID="email-input"
 					onChange={(event) => setEmail(event.target.value)}
 				/>
-				<Input
+				{/* <Input
 					label="Password"
 					id="password"
 					name="password"
 					type="password"
+					value={password}
+					dataTestID="password-input"
+					autoComplete="current-password"
+					onChange={(event) => setPassword(event.target.value)}
+				/> */}
+				<PasswordInput
+					label="Password"
+					id="password"
+					name="password"
 					value={password}
 					dataTestID="password-input"
 					autoComplete="current-password"
