@@ -58,6 +58,8 @@ export function FeedbackMessage() {
 			<div
 				className={clsx(
 					'inline-flex items-center gap-2 rounded-lg px-4 py-2 border',
+					'w-full justify-between',
+					'md:w-auto',
 					styles.background,
 					styles.border
 				)}
