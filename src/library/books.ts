@@ -4,6 +4,7 @@ import draculaImage from '@/images/dracula.webp';
 import madameBovaryImage from '@/images/madame-bovary.webp';
 import janeEyreImage from '@/images/jane-eyre.webp';
 import wutheringHeightsImage from '@/images/wuthering-heights.webp';
+import countMonteCristo from '@/images/count-of-monte-cristo.webp';
 
 export function getBookTitle(slug: string): string {
 	const book = books.find((book) => book.slug === slug);
@@ -55,6 +56,18 @@ export const books: StaticBook[] = [
 			"Embark on a tempestuous journey across the wild Yorkshire moors with Emily Brontë's only novel, 'Wuthering Heights'. This haunting tale of passionate love and bitter revenge has shocked and fascinated readers for generations.",
 			"Experience the tumultuous relationship between the mysterious Heathcliff and the headstrong Catherine Earnshaw, a love so powerful it transcends social class, family ties, and even death itself. Brontë's masterful storytelling weaves a complex narrative that explores the darkest corners of human nature.",
 			'Immerse yourself in the atmospheric world of Wuthering Heights, where the bleak beauty of the moors mirrors the stormy emotions of its characters. This timeless classic continues to captivate readers with its intense exploration of love, hatred, and the destructive power of obsession.',
+		],
+	},
+	{
+		title: 'The Count of Monte Cristo',
+		slug: 'count-of-monte-cristo',
+		author: 'Alexandre Dumas',
+		price: 1.99,
+		image: countMonteCristo,
+		description: [
+			"Dive into Alexandre Dumas' epic tale of betrayal, revenge, and redemption in 'The Count of Monte Cristo'. Follow Edmond Dantès' extraordinary transformation from an innocent young sailor to the enigmatic Count, as he orchestrates an elaborate plan of vengeance against those who destroyed his life.",
+			'Set against the turbulent backdrop of 19th-century France, this masterpiece weaves together intricate plots, hidden identities, and complex moral questions. Experience the dark glamour of Parisian society and the mysterious underworld of the Mediterranean as Dantès executes his calculated revenge.',
+			"This timeless classic explores the price of justice, the power of hope, and the possibility of redemption through Dumas' masterful storytelling. Join the millions who have been captivated by this thrilling adventure that proves revenge is indeed a dish best served cold.",
 		],
 	},
 ];
