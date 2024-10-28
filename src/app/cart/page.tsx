@@ -2,7 +2,7 @@
 import { useState, useMemo } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 
-import Container from '@/components/Container';
+import { Container, Spacer } from '@/components/Container';
 import CartSummary from '@/components/CartSummary';
 import { useCart } from '@/providers/CartProvider';
 import { useAuth } from '@/providers/AuthProvider';
@@ -91,24 +91,23 @@ export default function Cart() {
 	};
 
 	return (
-		<>
+		<Container>
 			<FeedbackMessage />
 			<CartSummary />
-			<Container>
-				<Button
-					text={isLoading ? 'Processing...' : 'Checkout'}
-					disabled={isLoading || activeCartItems.length === 0}
-					onClick={handleCheckout}
-					dataTestID={'checkout-button'}
-					variant="buy"
-				/>
-				<NavButton
-					href={'/'}
-					text={'Continue shopping'}
-					variant={'secondary'}
-					dataTestID="continue-shopping-button"
-				/>
-			</Container>
-		</>
+			<Spacer />
+			<Button
+				text={isLoading ? 'Processing...' : 'Checkout'}
+				disabled={isLoading || activeCartItems.length === 0}
+				onClick={handleCheckout}
+				dataTestID={'checkout-button'}
+				variant="buy"
+			/>
+			<NavButton
+				href={'/'}
+				text={'Continue shopping'}
+				variant={'secondary'}
+				dataTestID="continue-shopping-button"
+			/>
+		</Container>
 	);
 }
