@@ -105,8 +105,8 @@ export function TextButton({
 				focusStyles,
 				'bg-none',
 				'text-gray-500',
-				'underline underline-offset-2',
-				'decoration-transparent hover:decoration-gray-300',
+				'underline underline-offset-4',
+				'decoration-gray-300 sm:decoration-transparent sm:hover:decoration-gray-300',
 				'transition-all duration-300'
 			)}
 			data-testid={dataTestID}
@@ -150,7 +150,6 @@ export function CartButton({ slug, variant, dataTestID }: CartButtonProps) {
 				const endpoint = inCart
 					? `/api/cart/remove/${slug}`
 					: `/api/cart/add/${slug}`;
-				``;
 
 				const response = await fetch(endpoint, {
 					method: 'POST',
