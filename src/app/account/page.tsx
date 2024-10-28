@@ -1,13 +1,12 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import clsx from 'clsx';
 
-import { useAuth, validateToken } from '@/providers/AuthProvider';
+import { useAuth } from '@/providers/AuthProvider';
 import { AppState, type UserType } from '@/types';
 import PurchaseHistory from '@/components/PurchaseHistory';
 import { Button } from '@/components/Buttons';
-import Container from '@/components/Container';
+import { Container } from '@/components/Container';
 import { FeedbackMessage } from '@/components/FeedbackMessage';
 
 interface GridListItemProps {
@@ -40,25 +39,6 @@ function AccountDetails({ user }: AccountDetailsProps) {
 export default function Account() {
 	const router = useRouter();
 	const { user, updateAppState, isLoading } = useAuth();
-
-	useEffect(() => {
-		async function refreshUserData() {
-			const result = await validateToken();
-			if (result && result.user) {
-				updateAppState({
-					signedIn: true,
-					user: result.user,
-				});
-			} else {
-				updateAppState({
-					signedIn: false,
-					user: null,
-				});
-			}
-		}
-
-		refreshUserData();
-	}, [router]);
 
 	if (isLoading) {
 		return <p>Loading...</p>;
@@ -143,32 +123,28 @@ export default function Account() {
 	}
 
 	return (
-		<>
+		<Container>
 			<FeedbackMessage />
-			<div className="space-y-4 mt-8 mb-12 w-2/3 mx-auto">
-				<h2 className="text-xl font-semibold">Account details</h2>
-				<AccountDetails user={user} />
-			</div>
+			<h2 className="text-xl font-semibold">Account details</h2>
+			<AccountDetails user={user} />
+
 			{hasPurchased ? (
 				<PurchaseHistory />
 			) : (
-				<Container>
-					<h2 className="text-lg font-semibold">No purchases yet</h2>
-				</Container>
+				<h2 className="text-lg font-semibold">No purchases yet</h2>
 			)}
-			<div className="mt-8 w-2/3 mx-auto">
-				<Button
-					text={'Sign out'}
-					variant={'secondary'}
-					onClick={handleSignOut}
-					dataTestID="sign-out-button"
-				/>
-				<div className="my-4"></div>
-			</div>
+
+			<div className="h-16" />
+			<Button
+				text={'Sign out'}
+				variant={'secondary'}
+				onClick={handleSignOut}
+				dataTestID="sign-out-button"
+			/>
+			<div className="h-16" />
 			<div
 				className={clsx(
-					'w-2/3 mx-auto',
-					'mt-12   py-4 px-4',
+					'py-4 px-4',
 					'rounded',
 					'border border-red-200',
 					'bg-red-100'
@@ -184,6 +160,6 @@ export default function Account() {
 					dataTestID="delete-account-button"
 				/>
 			</div>
-		</>
+		</Container>
 	);
 }
