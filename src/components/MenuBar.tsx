@@ -58,18 +58,26 @@ function MenuItem({ item }: { item: MenuItem }) {
 		isCart && activeCartItems > 0 ? `Cart (${activeCartItems})` : item.name;
 
 	return (
+		// Refactor this to use Buttons/NavButton
 		<Link
 			href={item.href}
 			className={clsx(
 				'underline underline-offset-4 decoration-2',
-				'decoration-transparent hover:decoration-black',
 				'transition-all duration-300',
-				'focus:outline-2',
-				'outline-offset-4',
-				pathname === item.href && 'decoration-black',
-				item.className
+				'focus:outline-2 outline-offset-4 rounded',
+				item.className,
+				{
+					'decoration-transparent hover:decoration-black':
+						pathname !== item.href,
+					'decoration-black': pathname === item.href,
+				}
 			)}
 			data-testid={item.testID}
+			aria-current={pathname === item.href ? 'page' : undefined}
+			aria-label={
+				isCart ? `${displayName}, ${activeCartItems} items` : displayName
+			}
+			role="menuitem"
 		>
 			{displayName}
 		</Link>
