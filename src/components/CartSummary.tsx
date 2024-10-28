@@ -21,7 +21,7 @@ export default function CartSummary() {
 		);
 	}, [cartBooks, cart]);
 
-	const numberOfItemsMessage = `Total: (${activeBooks.length} item${
+	const numberOfItems = `(${activeBooks.length} item${
 		activeBooks.length === 1 ? '' : 's'
 	})`;
 
@@ -29,10 +29,8 @@ export default function CartSummary() {
 
 	return (
 		<>
-			<div className="w-2/3 mx-auto mb-2 pb-2">
-				<h2 className="text-lg font-semibold">{`Cart`}</h2>
-			</div>
-			<table className="w-2/3 mx-auto">
+			<h2 className="text-lg font-semibold">{`Cart`}</h2>
+			<table>
 				<tbody>
 					{cartBooks.map((book) => {
 						const cartItem = cart.find((item) => item.slug === book.slug);
@@ -40,9 +38,9 @@ export default function CartSummary() {
 
 						return (
 							<tr key={book.slug}>
-								<td className="py-3 pr-4 w-2/5">
+								<td className="py-3 pr-4 w-7/12">
 									<span
-										className={clsx('text-base', {
+										className={clsx('text-base text-balance', {
 											'line-through opacity-50': removedCartItem,
 										})}
 									>
@@ -57,10 +55,10 @@ export default function CartSummary() {
 										{book.author}
 									</span>
 								</td>
-								<td className="py-3 w-2/5 text-right">
+								<td className="py-3 w-3/12 text-right">
 									<CartButton slug={book.slug} variant={'text'} />
 								</td>
-								<td className="py-3 pl-4 w-1/5 text-right">
+								<td className="py-3 pl-4 w-2/12 text-right">
 									<span
 										className={clsx('text-sm text-gray-600', {
 											' line-through opacity-50': removedCartItem,
@@ -73,7 +71,12 @@ export default function CartSummary() {
 
 					<tr className="border-t border-gray-300">
 						<td className="py-3"></td>
-						<td className="py-3 text-right">{numberOfItemsMessage}</td>
+						<td className="py-3 text-right">
+							<span className="whitespace-nowrap">
+								<span>{`Total: `}</span>
+								<span className="inline-block">{numberOfItems}</span>
+							</span>
+						</td>
 						<td className="py-3 pl-4 text-right font-semibold">
 							£{orderTotal.toFixed(2)}
 						</td>
