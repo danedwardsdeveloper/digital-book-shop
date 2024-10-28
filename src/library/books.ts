@@ -5,6 +5,7 @@ import madameBovaryImage from '@/images/madame-bovary.webp';
 import janeEyreImage from '@/images/jane-eyre.webp';
 import wutheringHeightsImage from '@/images/wuthering-heights.webp';
 import countMonteCristo from '@/images/count-of-monte-cristo.webp';
+import crimeAndPunishmentImage from '@/images/crime-and-punishment.webp';
 
 export function getBookTitle(slug: string): string {
 	const book = books.find((book) => book.slug === slug);
@@ -22,6 +23,18 @@ export const books: StaticBook[] = [
 			"Step into the shadows of Victorian-era Transylvania with Bram Stoker's timeless masterpiece, 'Dracula'. This chilling tale of horror and suspense has captivated readers for over a century, and now it's your turn to experience the thrill.",
 			"Immerse yourself in a world of ancient castles, forbidden desires, and unspeakable terrors. As you follow Jonathan Harker's journey into the heart of darkness, you'll feel the hair-raising tension that has made 'Dracula' a cornerstone of gothic literature.",
 			"Don't miss your chance to own this classic in a beautifully formatted digital edition. With over 1 million copies sold, join the legion of fans who have been enthralled by the most famous vampire story ever told. Buy now and prepare for a sleepless night!",
+		],
+	},
+	{
+		title: 'Crime and Punishment',
+		slug: 'crime-and-punishment',
+		author: 'Fyodor Dostoevsky',
+		price: 1.99,
+		image: crimeAndPunishmentImage,
+		description: [
+			"Enter the tormented mind of Raskolnikov in Fyodor Dostoevsky's psychological masterpiece, 'Crime and Punishment'. This groundbreaking novel plunges deep into the moral dilemmas and spiritual struggles of a brilliant young man who believes himself above society's laws.",
+			"Follow Raskolnikov's journey through the dark streets of 19th-century St. Petersburg as he grapples with guilt, redemption, and the consequences of his actions. Dostoevsky's razor-sharp psychological insights and philosophical depth create an unforgettable exploration of the human conscience.",
+			'Experience the novel that revolutionized literature with its profound examination of crime, justice, and moral responsibility. This timeless work continues to challenge readers with its powerful questions about good and evil, free will, and the nature of redemption.',
 		],
 	},
 	{
