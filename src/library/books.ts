@@ -12,6 +12,10 @@ export function getBookTitle(slug: string): string {
 	return book?.title ?? slug;
 }
 
+export function getBookBySlug(slug: string): StaticBook | undefined {
+	return books.find((book) => book.slug === slug);
+}
+
 export const books: StaticBook[] = [
 	{
 		title: 'Dracula',
