@@ -17,7 +17,7 @@ export const books: StaticBook[] = [
 		title: 'Dracula',
 		slug: 'dracula',
 		author: 'Bram Stoker',
-		price: 1.99,
+		priceInPounds: 1.99,
 		image: draculaImage,
 		description: [
 			"Step into the shadows of Victorian-era Transylvania with Bram Stoker's timeless masterpiece, 'Dracula'. This chilling tale of horror and suspense has captivated readers for over a century, and now it's your turn to experience the thrill.",
@@ -29,7 +29,7 @@ export const books: StaticBook[] = [
 		title: 'Crime and Punishment',
 		slug: 'crime-and-punishment',
 		author: 'Fyodor Dostoevsky',
-		price: 1.99,
+		priceInPounds: 1.99,
 		image: crimeAndPunishmentImage,
 		description: [
 			"Enter the tormented mind of Raskolnikov in Fyodor Dostoevsky's psychological masterpiece, 'Crime and Punishment'. This groundbreaking novel plunges deep into the moral dilemmas and spiritual struggles of a brilliant young man who believes himself above society's laws.",
@@ -41,7 +41,7 @@ export const books: StaticBook[] = [
 		title: 'Jane Eyre',
 		slug: 'jane-eyre',
 		author: 'Charlotte Brontë',
-		price: 1.99,
+		priceInPounds: 1.99,
 		image: janeEyreImage,
 		description: [
 			"Discover the passionate world of Charlotte Brontë's 'Jane Eyre', a groundbreaking novel that continues to inspire and empower readers today. Follow Jane's transformative journey from a neglected orphan to a fiercely independent woman.",
@@ -52,7 +52,7 @@ export const books: StaticBook[] = [
 		title: 'Madame Bovary',
 		slug: 'madame-bovary',
 		author: 'Gustave Flaubert',
-		price: 1.99,
+		priceInPounds: 1.99,
 		image: madameBovaryImage,
 		description: [
 			"Indulge in the scandalous world of Gustave Flaubert's 'Madame Bovary', the novel that shocked 19th-century France and revolutionized modern literature. Delve into the life of Emma Bovary as she pursues passion and luxury, challenging the societal norms of her time.",
@@ -63,7 +63,7 @@ export const books: StaticBook[] = [
 		title: 'Wuthering Heights',
 		slug: 'wuthering-heights',
 		author: 'Emily Brontë',
-		price: 1.99,
+		priceInPounds: 1.99,
 		image: wutheringHeightsImage,
 		description: [
 			"Embark on a tempestuous journey across the wild Yorkshire moors with Emily Brontë's only novel, 'Wuthering Heights'. This haunting tale of passionate love and bitter revenge has shocked and fascinated readers for generations.",
@@ -75,7 +75,7 @@ export const books: StaticBook[] = [
 		title: 'The Count of Monte Cristo',
 		slug: 'count-of-monte-cristo',
 		author: 'Alexandre Dumas',
-		price: 1.99,
+		priceInPounds: 1.99,
 		image: countMonteCristo,
 		description: [
 			"Dive into Alexandre Dumas' epic tale of betrayal, revenge, and redemption in 'The Count of Monte Cristo'. Follow Edmond Dantès' extraordinary transformation from an innocent young sailor to the enigmatic Count, as he orchestrates an elaborate plan of vengeance against those who destroyed his life.",

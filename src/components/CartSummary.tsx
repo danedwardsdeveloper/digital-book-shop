@@ -25,7 +25,10 @@ export default function CartSummary() {
 		activeBooks.length === 1 ? '' : 's'
 	})`;
 
-	const orderTotal = activeBooks.reduce((sum, book) => sum + book.price, 0);
+	const orderTotal = activeBooks.reduce(
+		(sum, book) => sum + book.priceInPounds,
+		0
+	);
 
 	return (
 		<>
@@ -63,7 +66,7 @@ export default function CartSummary() {
 										className={clsx('text-sm text-gray-600', {
 											' line-through opacity-50': removedCartItem,
 										})}
-									>{`£${book.price.toFixed(2)}`}</span>
+									>{`£${book.priceInPounds.toFixed(2)}`}</span>
 								</td>
 							</tr>
 						);

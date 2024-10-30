@@ -4,7 +4,7 @@ export interface StaticBook {
 	title: string;
 	slug: string;
 	author: string;
-	price: number;
+	priceInPounds: number;
 	description: string[];
 	image: StaticImageData;
 }
@@ -37,9 +37,4 @@ export interface AppState {
 	status: AppMessageStatus;
 	signedIn: boolean;
 	user: UserType | null;
-}
-
-export interface Token {
-	sub: string;
-	exp: number;
 }

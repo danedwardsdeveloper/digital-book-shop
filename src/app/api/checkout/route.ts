@@ -71,7 +71,7 @@ export async function POST() {
 						product_data: {
 							name: book.title,
 						},
-						unit_amount: book.price * 100,
+						unit_amount: book.priceInPounds * 100,
 					},
 					quantity: 1,
 				};

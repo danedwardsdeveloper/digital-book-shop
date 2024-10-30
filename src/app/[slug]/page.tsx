@@ -59,7 +59,7 @@ export default function BookPage({ params }: { params: { slug: string } }) {
 								'text-left sm:text-right'
 							)}
 						>
-							£{book.price.toFixed(2)}
+							£{book.priceInPounds.toFixed(2)}
 						</p>
 						<p className="text-gray-700 text-justify">{`This exclusive digital edition is meticulously typeset to bring ${book.author}'s prose to life for contemporary readers. Purchase now and lose yourself in this unforgettable classic!`}</p>
 						<CartButton
