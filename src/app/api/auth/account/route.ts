@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
 import { User, connectToDatabase } from '@/library/User';
-import { Token } from '@/types';
+import { type Token } from '@/library/cookies';
 
 export async function GET() {
 	try {
@@ -13,7 +13,13 @@ export async function GET() {
 		const token = cookieStore.get('token');
 
 		if (!token) {
-			return NextResponse.json({ error: 'No token found' }, { status: 401 });
+			return NextResponse.json(
+				{
+					signedIn: false,
+					user: null,
+				},
+				{ status: 200 }
+			);
 		}
 
 		try {
@@ -26,7 +32,12 @@ export async function GET() {
 
 			if (!user) {
 				return NextResponse.json(
-					{ error: 'User not found' },
+					{
+						status: 'error',
+						message: 'User account not found',
+						signedIn: false,
+						user: null,
+					},
 					{ status: 404 }
 				);
 			}
@@ -43,13 +54,26 @@ export async function GET() {
 				},
 			});
 		} catch (jwtError) {
-			console.error('JWT verification error:', jwtError);
-			return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+			console.error('JWT error:', jwtError);
+			return NextResponse.json(
+				{
+					status: 'warning',
+					message: 'Session expired - please sign in.',
+					signedIn: false,
+					user: null,
+				},
+				{ status: 200 }
+			);
 		}
 	} catch (error) {
-		console.error('Account validation error:', error);
+		console.error('Server error:', error);
 		return NextResponse.json(
-			{ error: 'Internal server error' },
+			{
+				status: 'error',
+				message: 'Unable to verify account status',
+				signedIn: false,
+				user: null,
+			},
 			{ status: 500 }
 		);
 	}
