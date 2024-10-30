@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import clsx from 'clsx';
+import { FeedbackMessage } from './FeedbackMessage';
 
 export function Container({ children }: { children: ReactNode }) {
 	return (
@@ -10,6 +11,30 @@ export function Container({ children }: { children: ReactNode }) {
 				'md:w-2/3 mx-auto flex flex-col space-y-4'
 			)}
 		>
+			{children}
+		</div>
+	);
+}
+
+interface ContainerWithHeadingProps {
+	heading: string;
+	children: ReactNode;
+}
+
+export function ContainerWithHeading({
+	heading,
+	children,
+}: ContainerWithHeadingProps) {
+	return (
+		<div
+			className={clsx(
+				'container',
+				'w-full',
+				'md:w-2/3 mx-auto flex flex-col space-y-4'
+			)}
+		>
+			<FeedbackMessage />
+			<h1 className="text-lg font-semibold">{heading}</h1>
 			{children}
 		</div>
 	);
