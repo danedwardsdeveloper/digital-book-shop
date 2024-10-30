@@ -47,9 +47,6 @@ export function FeedbackMessage() {
 	const handleDismiss = () => {
 		updateAppState({
 			message: null,
-			status: 'info',
-			signedIn: true,
-			user: null,
 		});
 	};
 
