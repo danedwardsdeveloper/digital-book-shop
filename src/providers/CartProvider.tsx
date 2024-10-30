@@ -101,16 +101,49 @@ export function CartProvider({ children }: { children: ReactNode }) {
 	const mergeLocalAndDatabaseCarts = async (user: UserType) => {
 		const localCart = getCart();
 		const databaseCart = user.cart.map(cleanCartItem);
-		const mergedCart = [...databaseCart];
 
-		for (const localItem of localCart) {
-			if (!mergedCart.some((item) => item.slug === localItem.slug)) {
-				mergedCart.push(cleanCartItem(localItem));
+		const mergedItemsMap = new Map<string, CartItem>();
+
+		databaseCart.forEach((item) => {
+			mergedItemsMap.set(item.slug, { ...item });
+		});
+
+		localCart.forEach((localItem) => {
+			const existingItem = mergedItemsMap.get(localItem.slug);
+			if (existingItem) {
+				mergedItemsMap.set(localItem.slug, {
+					slug: localItem.slug,
+					removed: existingItem.removed && localItem.removed,
+				});
+			} else {
+				mergedItemsMap.set(localItem.slug, { ...localItem });
 			}
-		}
+		});
+
+		const mergedCart = Array.from(mergedItemsMap.values());
 
 		setCart(mergedCart);
 		updateLocalStorage(mergedCart);
+
+		try {
+			const response = await fetch('/api/cart/sync', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				credentials: 'include',
+				body: JSON.stringify({ cart: mergedCart }),
+			});
+
+			if (!response.ok) {
+				console.error(
+					'Failed to sync cart with database:',
+					response.status
+				);
+			}
+		} catch (error) {
+			console.error('Failed to sync cart with database:', error);
+		}
 	};
 
 	const contextValue: CartContextType = {
