@@ -8,6 +8,7 @@ import PurchaseHistory from '@/components/PurchaseHistory';
 import { Button } from '@/components/Buttons';
 import { Container } from '@/components/Container';
 import { FeedbackMessage } from '@/components/FeedbackMessage';
+import { useCart } from '@/providers/CartProvider';
 
 interface GridListItemProps {
 	label: string;
@@ -39,6 +40,7 @@ function AccountDetails({ user }: AccountDetailsProps) {
 export default function Account() {
 	const router = useRouter();
 	const { user, updateAppState, isLoading } = useAuth();
+	const { clearCart } = useCart();
 
 	if (isLoading) {
 		return <p>Loading...</p>;
@@ -59,6 +61,7 @@ export default function Account() {
 
 			const data: AppState = await response.json();
 
+			clearCart();
 			localStorage.removeItem('cart');
 
 			updateAppState({
