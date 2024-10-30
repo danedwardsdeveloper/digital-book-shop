@@ -2,9 +2,10 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
-import type { AppState, Token, UserType, StaticBook, CartItem } from '@/types';
+import type { AppState, UserType, StaticBook, CartItem } from '@/types';
+import { Token } from '@/library/cookies';
 import { User, connectToDatabase } from '@/library/User';
-import { books } from '@/library/books';
+import { getBookBySlug } from '@/library/books';
 
 export async function GET() {
 	try {
@@ -47,16 +48,16 @@ export async function GET() {
 			});
 		}
 
-		const responseUser: UserType = {
+		const userWithBookDetails: UserType = {
 			id: user._id.toString(),
 			name: user.name,
 			email: user.email,
 			cart: user.cart
 				.map((item: CartItem) => {
-					const book = books.find((b) => b.slug === item.slug);
+					const book = getBookBySlug(item.slug);
 					return book ? { ...book, slug: item.slug } : null;
 				})
-				.filter((item: StaticBook): item is StaticBook => item !== null),
+				.filter(Boolean) as StaticBook[],
 			purchased: user.purchased,
 		};
 
@@ -64,7 +65,7 @@ export async function GET() {
 			status: 'success',
 			message: null,
 			signedIn: true,
-			user: responseUser,
+			user: userWithBookDetails,
 		});
 	} catch (error) {
 		console.error('Error in cart route:', error);
