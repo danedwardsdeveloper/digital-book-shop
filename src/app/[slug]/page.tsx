@@ -2,12 +2,12 @@ import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import clsx from 'clsx';
 
-import { books } from '@/library/books';
+import { books, getBookBySlug } from '@/library/books';
 import { CartButton } from '@/components/Buttons';
 import { FeedbackMessage } from '@/components/FeedbackMessage';
 
 export default function BookPage({ params }: { params: { slug: string } }) {
-	const book = books.find((book) => book.slug === params.slug);
+	const book = getBookBySlug(params.slug);
 
 	if (!book) {
 		notFound();
