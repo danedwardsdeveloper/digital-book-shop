@@ -10,10 +10,10 @@ type CookieOptions = {
 	path: string;
 };
 
-export function createCookieOptions(token: string): CookieOptions {
+export function createCookieOptions(tokenValue: string): CookieOptions {
 	return {
 		name: 'token',
-		value: token,
+		value: tokenValue,
 		httpOnly: true,
 		secure: isProduction,
 		sameSite: 'strict',
