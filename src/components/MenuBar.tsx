@@ -49,6 +49,16 @@ const menuItems: MenuItem[] = [
 	},
 ];
 
+function MenuContainer({ children }: { children: React.ReactNode }) {
+	return (
+		<nav className="sticky top-0 z-10 shadow-sm bg-white/80 backdrop-blur border-b border-gray-200">
+			<div className="max-w-2xl mx-auto px-4 py-2">
+				<ul className="flex flex-wrap gap-4">{children}</ul>
+			</div>
+		</nav>
+	);
+}
+
 function MenuItem({ item }: { item: MenuItem }) {
 	const { cart } = useCart();
 	const pathname = usePathname();
@@ -58,7 +68,6 @@ function MenuItem({ item }: { item: MenuItem }) {
 		isCart && activeCartItems > 0 ? `Cart (${activeCartItems})` : item.name;
 
 	return (
-		// Refactor this to use Buttons/NavButton
 		<Link
 			href={item.href}
 			className={clsx(
@@ -84,28 +93,7 @@ function MenuItem({ item }: { item: MenuItem }) {
 	);
 }
 
-export default function MenuBar() {
-	const { signedIn, isLoading } = useAuth();
-
-	// ToDo: this is chaotic, confusing and doesn't look good!
-	if (isLoading) {
-		const alwaysItems = menuItems.filter(
-			(item) => item.showWhen === 'always'
-		);
-		return (
-			<nav className="sticky top-0 z-10 shadow-sm bg-white/80 backdrop-blur border-b border-gray-200">
-				<div className="max-w-2xl mx-auto px-4 py-2">
-					<ul className="flex flex-wrap gap-4">
-						<MenuItem item={alwaysItems[0]} />
-						<div className="h-6 w-20 bg-gray-200 animate-pulse rounded" />
-						<div className="h-6 w-20 bg-gray-200 animate-pulse rounded" />
-						{alwaysItems[1] && <MenuItem item={alwaysItems[1]} />}
-					</ul>
-				</div>
-			</nav>
-		);
-	}
-
+function MenuItems({ signedIn }: { signedIn: boolean }) {
 	const visibleItems = menuItems.filter(
 		(item) =>
 			item.showWhen === 'always' ||
@@ -114,14 +102,33 @@ export default function MenuBar() {
 	);
 
 	return (
-		<nav className="sticky top-0 z-10 shadow-sm bg-white/80 backdrop-blur border-b border-gray-200">
-			<div className="max-w-2xl mx-auto px-4 py-2">
-				<ul className="flex flex-wrap gap-4">
-					{visibleItems.map((item, index) => (
-						<MenuItem key={index} item={item} />
-					))}
-				</ul>
-			</div>
-		</nav>
+		<>
+			{visibleItems.map((item) => (
+				<MenuItem key={item.testID} item={item} />
+			))}
+		</>
+	);
+}
+
+function LoadingMenu() {
+	const alwaysItems = menuItems.filter((item) => item.showWhen === 'always');
+
+	return (
+		<>
+			<MenuItem item={alwaysItems[0]} />
+			<div className="h-6 w-20 bg-gray-100 animate-pulse rounded" />
+			<div className="h-6 w-20 bg-gray-100 animate-pulse rounded" />
+			{alwaysItems[1] && <MenuItem item={alwaysItems[1]} />}
+		</>
+	);
+}
+
+export default function MenuBar() {
+	const { signedIn, isLoading } = useAuth();
+
+	return (
+		<MenuContainer>
+			{isLoading ? <LoadingMenu /> : <MenuItems signedIn={signedIn} />}
+		</MenuContainer>
 	);
 }
