@@ -4,8 +4,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 import { User, connectToDatabase } from '@/library/User';
-import { Token } from '@/types';
-import { createCookieOptions } from '@/library/cookies';
+import { createCookieOptions, generateTokenPayload } from '@/library/cookies';
 
 export async function POST(request: Request) {
 	try {
@@ -34,11 +33,7 @@ export async function POST(request: Request) {
 				{ status: 401 }
 			);
 		}
-
-		const tokenPayload: Token = {
-			sub: user._id.toString(),
-			exp: Math.floor(Date.now() / 1000) + 60 * 60,
-		};
+		const tokenPayload = generateTokenPayload(user._id.toString());
 
 		const token = jwt.sign(tokenPayload, process.env.JWT_SECRET!);
 
