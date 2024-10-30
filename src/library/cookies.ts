@@ -21,3 +21,15 @@ export function createCookieOptions(token: string): CookieOptions {
 		path: '/',
 	};
 }
+
+export interface Token {
+	sub: string;
+	exp: number;
+}
+
+export function generateTokenPayload(userId: string): Token {
+	return {
+		sub: userId,
+		exp: Math.floor(Date.now() / 1000) + 60 * 60,
+	};
+}
