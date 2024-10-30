@@ -94,16 +94,6 @@ export default function SignIn() {
 					dataTestID="email-input"
 					onChange={(event) => setEmail(event.target.value)}
 				/>
-				{/* <Input
-					label="Password"
-					id="password"
-					name="password"
-					type="password"
-					value={password}
-					dataTestID="password-input"
-					autoComplete="current-password"
-					onChange={(event) => setPassword(event.target.value)}
-				/> */}
 				<PasswordInput
 					label="Password"
 					id="password"
