@@ -5,7 +5,8 @@ import jwt from 'jsonwebtoken';
 import Stripe from 'stripe';
 
 import { dynamicBaseURL } from '@/library/environment';
-import type { AppMessageStatus, CartItem, Token } from '@/types';
+import type { AppMessageStatus, CartItem } from '@/types';
+import { Token } from '@/library/cookies';
 import { User, connectToDatabase } from '@/library/User';
 import { books } from '@/library/books';
 
