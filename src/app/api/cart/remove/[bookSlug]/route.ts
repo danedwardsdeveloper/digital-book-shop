@@ -5,7 +5,8 @@ import jwt from 'jsonwebtoken';
 
 import { createCookieOptions } from '@/library/cookies';
 import { User, connectToDatabase } from '@/library/User';
-import type { AppState, AppMessageStatus, Token, CartItem } from '@/types';
+import type { AppState, AppMessageStatus, CartItem } from '@/types';
+import { Token } from '@/library/cookies';
 import { getBookTitle } from '@/library/books';
 
 const jwtSecret = process.env.JWT_SECRET!;
