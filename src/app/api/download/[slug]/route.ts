@@ -5,7 +5,8 @@ import fs from 'fs/promises';
 import path from 'path';
 
 import { connectToDatabase, User } from '@/library/User';
-import { type PurchasedItem, type Token } from '@/types';
+import { type PurchasedItem } from '@/types';
+import { type Token } from '@/library/cookies';
 
 async function getBookFile(slug: string): Promise<Buffer> {
 	try {

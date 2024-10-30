@@ -5,7 +5,8 @@ import jwt from 'jsonwebtoken';
 
 import { createCookieOptions } from '@/library/cookies';
 import { User, connectToDatabase } from '@/library/User';
-import type { AppState, AppMessageStatus, Token } from '@/types';
+import type { AppState, AppMessageStatus } from '@/types';
+import { type Token } from '@/library/cookies';
 
 export async function POST(): Promise<NextResponse<AppState>> {
 	const cookieStore = cookies();

@@ -3,7 +3,8 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
-import type { AppState, CartItem, Token, UserType } from '@/types';
+import type { AppState, CartItem, UserType } from '@/types';
+import { type Token } from '@/library/cookies';
 import { createCookieOptions } from '@/library/cookies';
 import { User, connectToDatabase } from '@/library/User';
 import { books, getBookTitle } from '@/library/books';

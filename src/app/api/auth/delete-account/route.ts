@@ -3,7 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 
 import { isProduction } from '@/library/environment';
-import type { Token, AppState, AppMessageStatus } from '@/types';
+import type { AppState, AppMessageStatus } from '@/types';
+import { type Token } from '@/library/cookies';
 import { connectToDatabase, User } from '@/library/User';
 
 export async function DELETE(

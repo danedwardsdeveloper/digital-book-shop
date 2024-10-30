@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
 import type { AppState, UserType, StaticBook, CartItem } from '@/types';
-import { Token } from '@/library/cookies';
+import { type Token } from '@/library/cookies';
 import { User, connectToDatabase } from '@/library/User';
 import { getBookBySlug } from '@/library/books';
 
