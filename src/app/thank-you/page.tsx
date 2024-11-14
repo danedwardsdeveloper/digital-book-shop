@@ -1,24 +1,24 @@
-'use client';
-import { useEffect } from 'react';
-import { useCart } from '@/providers/CartProvider';
-import { ContainerWithHeading, Spacer } from '@/components/Container';
-import { NavButton } from '@/components/Buttons';
+'use client'
+
+import { useEffect } from 'react'
+
+import { NavButton } from '@/components/Buttons'
+import { ContainerWithHeading, Spacer } from '@/components/Container'
+
+import { useCart } from '@/providers/CartProvider'
 
 export default function ThankYou() {
-	const { clearCart } = useCart();
+  const { clearCart } = useCart()
 
-	useEffect(() => {
-		clearCart();
-	}, []);
+  useEffect(() => {
+    clearCart()
+  }, [clearCart])
 
-	return (
-		<ContainerWithHeading heading="Thank you">
-			<p>Purchase successful.</p>
-			<Spacer />
-			<NavButton
-				text={'View purchases in account'}
-				href={'/account'}
-			></NavButton>
-		</ContainerWithHeading>
-	);
+  return (
+    <ContainerWithHeading heading="Thank you">
+      <p>Purchase successful.</p>
+      <Spacer />
+      <NavButton href={'/account'} text={'View purchases in account'}></NavButton>
+    </ContainerWithHeading>
+  )
 }
