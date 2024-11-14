@@ -1,6 +1,28 @@
 {
-	"extends": ["next/core-web-vitals", "next/typescript"],
-	"rules": {
-		"react-hooks/exhaustive-deps": "off"
-	}
+  "extends": ["next/core-web-vitals", "next/typescript"],
+  "rules": {
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "varsIgnorePattern": "^_",
+        "argsIgnorePattern": "^_",
+        "ignoreRestSiblings": true,
+        "args": "none"
+      }
+    ],
+    "no-shadow": "off",
+    "@typescript-eslint/no-shadow": [
+      "error",
+      {
+        "builtinGlobals": true,
+        "hoist": "all",
+        // prettier-ignore
+        "allow": [
+          "context", "data", "description", "Document", "email", "error", "event", "global", "id", "Image", "message", "name", "params", "password", "path", "props", "query", "reject", "req", "Request", "res", "resolve", "Response", "result", "session", "status", "text", "title", "type", "url", "user", "value"
+        ],
+        "ignoreTypeValueShadow": true,
+        "ignoreFunctionTypeParameterNameValueShadow": true
+      }
+    ]
+  }
 }
